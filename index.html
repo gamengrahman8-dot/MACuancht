@@ -293,6 +293,11 @@ const auth=getAuth(app),db=getDatabase(app);
 setPersistence(auth,browserLocalPersistence).catch(()=>{});
 const SITE='https://gamengrahman8-dot.github.io/MACuan-cht/',SUPPORT='09011268205',OFFICIAL='macuancht';
 const $=id=>document.getElementById(id);
+let LOCAL={muted:{},pinned:{},cleared:{},drafts:{}};
+const lsGet=(k,d)=>{try{return JSON.parse(localStorage.getItem('mc_'+k+'_'+uid))||d}catch(e){return d}};
+const saveL=k=>{try{localStorage.setItem('mc_'+k+'_'+uid,JSON.stringify(LOCAL[k]))}catch(e){}};
+const canPostIn=d=>!!d&&!!(d.members&&d.members[uid])&&((d.type!=='channel'&&!(d.type==='group'&&d.closed))||staff(d));
+const VERIFIED=['macuancht','macuan'],verIds=new Set();
 const el=(t,c,h)=>{const e=document.createElement(t);if(c)e.className=c;if(h!=null)e.textContent=h;return e};
 let me=null,uid=null,cur=null,curData=null,stopMsgs=null,stopX=null,chats={},watchers={},ucache={},avTmp=null,tab='',openedAt=0,reads={},pres=null,typers=0,started=false;
 const botId=()=>'bot_'+uid,savedId=()=>'saved_'+uid,isPin=id=>id===botId()||id===savedId();
@@ -364,6 +369,7 @@ onAuthStateChanged(auth,async u=>{
 });
 function startApp(){
   if(started)return;started=true;
+  ['muted','pinned','cleared','drafts'].forEach(k=>LOCAL[k]=lsGet(k,{}));
   loadFolders();
   presence();
   resolveAdvon();registerSession().catch(()=>{});
@@ -451,8 +457,10 @@ function rowFor(id,d,onclick){
   const r=el('div','row'+(id===cur?' on':'')),a=el('div','av');setAv(a,d.photo,d.icon||d.name);
   const t=el('div'),b=el('b',null,d.name||''),k={channel:'کانال',group:'گروه',bot:'ربات'}[d.type];
   if(k)b.append(el('i','tag',k));
+  if(LOCAL.pinned[id])b.append(el('i','tag','📌'));if(LOCAL.muted[id])b.append(el('i','tag','🔇'));
   if(isVer(d.vid||id))b.append(vbadge());
-  t.append(b,el('span',null,d.sub||d.lastText||(d.handle?'@'+d.handle:'')));r.append(a,t);
+  const dr=(id!==cur&&LOCAL.drafts[id])?'پیش‌نویس: '+LOCAL.drafts[id].slice(0,40):'';
+  t.append(b,el('span',null,dr||d.sub||d.lastText||(d.handle?'@'+d.handle:'')));r.append(a,t);
   if(chats[id]&&id!==cur&&d.lastTs>(reads[id]||0)&&d.lastBy&&d.lastBy!==uid)r.append(el('div','badge','جدید'));
   r.onclick=onclick;return r;
 }
@@ -462,7 +470,7 @@ function renderList(){
   const L=$('list');L.innerHTML='';const p=pins();
   if(!tab||tab==='dm')L.append(rowFor(botId(),p.bot,()=>openChat(botId(),p.bot)),rowFor(savedId(),p.saved,()=>openChat(savedId(),p.saved)));
   const fo=tab.startsWith('f:')?FOLDERS.find(f=>'f:'+f.id===tab):null;
-  const arr=Object.entries(chats).filter(([id,d])=>!tab||(fo?fo.ids.includes(id):d.type===tab)).sort((a,b)=>(b[1].lastTs||0)-(a[1].lastTs||0));
+  const arr=Object.entries(chats).filter(([id,d])=>!tab||(fo?fo.ids.includes(id):d.type===tab)).sort((a,b)=>(!!LOCAL.pinned[b[0]]-!!LOCAL.pinned[a[0]])||(b[1].lastTs||0)-(a[1].lastTs||0));
   if(!arr.length)L.append(el('div','empty','چتی در این بخش نیست.\nبا جست‌وجوی آیدی کسی را پیدا کن یا گروه بساز.'));
   arr.forEach(([id,d])=>L.append(rowFor(id,d,()=>openChat(id))));
 }
@@ -535,14 +543,14 @@ function setSub(){
   const d=curData;if(!d)return;let t;
   if(typers)t='در حال تایپ...';
   else if(d.type==='dm')t=presHide?'آخرین بازدید به‌تازگی':pres===true?'آنلاین':(typeof pres==='number'?'آخرین بازدید: '+new Date(pres).toLocaleTimeString(LOC,{hour:'2-digit',minute:'2-digit'}):(d.handle?'@'+d.handle:''));
-  else t=d.sub||((isVer(cur)&&d.type==='channel'?'کانال رسمی • ':kind(d)+' • ')+Object.keys(d.members||{}).length+' عضو');
+  else t=d.sub||((isVer(cur)&&d.type==='channel'?'کانال رسمی • ':kind(d)+(d.closed?' (بسته)':'')+' • ')+Object.keys(d.members||{}).length+' عضو');
   $('chSub').textContent=t;
 }
 function head(){
   const d=curData;setAv($('chAv'),d.photo,d.icon||d.name);$('chName').textContent=d.name||'';if(isVer(d.vid||cur))$('chName').append(vbadge());setSub();
-  const mem=isMember(),canPost=mem&&(d.type!=='channel'||staff(d));
+  const mem=isMember(),canPost=canPostIn(d);
   ['txt','send','attBtn'].forEach(i=>$(i).classList.toggle('hide',!canPost));
-  $('joinBtn').classList.toggle('hide',!!mem);$('ro').classList.toggle('hide',!(mem&&!canPost));
+  $('joinBtn').classList.toggle('hide',!!mem);$('ro').classList.toggle('hide',!(mem&&!canPost));$('ro').textContent=(d.type==='group'&&d.closed)?'گروه بسته است؛ فقط مدیران می‌توانند پیام بدهند':'فقط مدیران می‌توانند در کانال پیام بدهند';
   if(!mem&&d.type!=='dm')$('joinBtn').textContent='پیوستن به '+kind(d);
   $('pollItem').classList.toggle('hide',!(d.type==='group'||d.type==='channel'));
   const pn=d.pinned,pb=$('pin');pb.classList.toggle('hide',!pn);pb.textContent='';
@@ -556,11 +564,12 @@ function markRead(id){if(isPin(id))return;reads[id]=Date.now();set(ref(db,'reads
 async function openChat(id,preset){
   cur=id;curData=preset||chats[id]||(await get(ref(db,'chats/'+id))).val()||{};openedAt=Date.now();pres=null;typers=0;
   $('app').classList.add('in');$('ph').classList.add('hide');$('chat').classList.remove('hide');
-  head();renderList();$('msgs').innerHTML='';$('csq').value='';$('cs').classList.add('hide');if(stopMsgs)stopMsgs();if(stopX)stopX();markRead(id);
+  head();renderList();$('msgs').innerHTML='';$('csq').value='';$('cs').classList.add('hide');if(stopMsgs)stopMsgs();if(stopX)stopX();markRead(id);$('txt').value=LOCAL.drafts[id]||'';
   const q=query(ref(db,'messages/'+id),limitToLast(150)),type=curData.type,offs=[];let lastDay='';replyTo=null;$('rp').classList.add('hide');
   if(type==='dm'){const o=Object.keys(curData.members||{}).find(k=>k!==uid);if(o){presHide=false;getUser(o).then(u=>allowed(u,o,'seen')).then(ok=>{if(cur===id){presHide=!ok;setSub()}});offs.push(onValue(ref(db,'presence/'+o),s=>{pres=s.val();setSub()}))}}
   if(!isPin(id))offs.push(onValue(ref(db,'typing/'+id),s=>{typers=Object.keys(s.val()||{}).filter(k=>k!==uid).length;setSub()}));
   const build=async(m,key)=>{
+    if(m.sys){const x=el('div','dv',m.text);x.dataset.k=key;return x}
     const d=el('div','m'+(m.uid===uid?' me':''));d.dataset.k=key;
     if(m.uid!==uid&&!['dm','bot','saved'].includes(type)){const u=await getUser(m.uid),sp=el('span','n',u.name);if(isVer(m.uid))sp.append(vbadge());sp.style.cursor='pointer';sp.onclick=e=>{e.stopPropagation();userModal(m.uid,u)};d.append(sp)}
     if(m.fwd)d.append(el('span','fw','فوروارد از '+m.fwd));
@@ -582,15 +591,15 @@ async function openChat(id,preset){
     let tm;const stop=()=>{clearTimeout(tm);d.classList.remove('hold')};
     d.addEventListener('pointerdown',e=>{if(e.button>0)return;d.classList.add('hold');tm=setTimeout(()=>{d.classList.remove('hold');msgMenu(m,key,id)},1000)});
     ['pointerup','pointerleave','pointercancel'].forEach(ev=>d.addEventListener(ev,stop));
-    d.addEventListener('dblclick',()=>{if(isMember()&&!isPin(id))react(id,key,'♥')});
+    d.addEventListener('dblclick',()=>{if(isMember()&&!isPin(id))react(id,key,'❤️')});
     d.addEventListener('contextmenu',e=>e.preventDefault());
     return d;
   };
   const u1=onChildAdded(q,async s=>{
-    if(cur!==id)return;const box=$('msgs'),nb=box.scrollHeight-box.scrollTop-box.clientHeight<120,m=s.val(),d=await build(m,s.key);
+    if(cur!==id)return;const box=$('msgs'),nb=box.scrollHeight-box.scrollTop-box.clientHeight<120,m=s.val();if(m.ts<=(LOCAL.cleared[id]||0))return;const d=await build(m,s.key);
     const day=new Date(m.ts).toDateString();if(day!==lastDay){lastDay=day;box.append(el('div','dv',dayLabel(m.ts)))}
     box.append(d);if(nb||m.uid===uid)box.scrollTop=box.scrollHeight;
-    if(m.uid!==uid&&m.ts>openedAt){if(S.snd)beep();markRead(id)}
+    if(m.uid!==uid&&m.ts>openedAt){if(S.snd&&!LOCAL.muted[id])beep();markRead(id)}
   });
   const u2=onChildChanged(q,async s=>{const o=$('msgs').querySelector('[data-k="'+s.key+'"]');if(o)o.replaceWith(await build(s.val(),s.key))});
   const u3=onChildRemoved(q,s=>{const o=$('msgs').querySelector('[data-k="'+s.key+'"]');if(o)o.remove()});
@@ -598,11 +607,12 @@ async function openChat(id,preset){
 }
 /* منوی نگه‌داشتن ۲ ثانیه‌ای روی پیام */
 function msgMenu(m,key,id){
-  const d=curData,canPost=isMember()&&(d.type!=='channel'||staff(d)),grp=d.type==='group'||d.type==='channel';
+  const d=curData,canPost=canPostIn(d),grp=d.type==='group'||d.type==='channel';
   modal((b,close)=>{
     b.append(el('h3',null,'پیام'));
+    if(isMember()&&!isPin(id)){const er=el('div','ers');['👍','❤️','😂','😮','😢','🔥'].forEach(e=>{const x=el('button',null,e);x.onclick=()=>{close();react(id,key,e)};er.append(x)});b.append(er)}
     const add=(t,f,g)=>{const x=el('button','btn g',t);x.onclick=()=>{close();f()};b.append(x)};
-    if(isMember()&&!isPin(id))add((m.re&&m.re[uid])?'برداشتن پسند':'پسندیدن',()=>react(id,key,'♥'));
+    if(isMember()&&!isPin(id))add((m.re&&m.re[uid])?'برداشتن پسند':'پسندیدن',()=>react(id,key,'❤️'));
     if(canPost&&!isPin(id))add('پاسخ',()=>setReply(m,key));
     if(m.uid!==uid&&m.uid!=='bot'&&!isPin(id))add('پروفایل',async()=>userModal(m.uid,await getUser(m.uid)));
     if(m.uid===uid&&m.text)add('ویرایش',()=>editMsg(m,key,id));
@@ -639,7 +649,7 @@ async function forwardMsg(m){
   modal((b,close)=>{
     b.append(el('h3',null,'ارسال به...'));
     const L=el('div');L.style.cssText='display:flex;flex-direction:column;gap:2px;overflow:auto;max-height:50vh';b.append(L);
-    const targets=[[savedId(),pins().saved],...Object.entries(chats).filter(([id,d])=>d.members&&d.members[uid]&&(d.type!=='channel'||staff(d)))];
+    const targets=[[savedId(),pins().saved],...Object.entries(chats).filter(([id,d])=>canPostIn(d))];
     targets.forEach(([id,d])=>L.append(rowFor(id,{...d,sub:''},async()=>{
       close();const o={uid,ts:Date.now(),fwd:from};['text','img','file','audio'].forEach(k=>{if(m[k])o[k]=m[k]});if(m.poll)o.poll=m.poll;
       await push(ref(db,'messages/'+id),o);
@@ -681,6 +691,7 @@ async function saveMsg(m){const o={uid,ts:Date.now()};['text','img','file','audi
 let tt,tOn='';
 function stopTyping(){clearTimeout(tt);if(tOn){remove(ref(db,'typing/'+tOn+'/'+uid)).catch(()=>{});tOn=''}}
 $('txt').oninput=()=>{
+  if(cur){const v=$('txt').value;if(v)LOCAL.drafts[cur]=v;else delete LOCAL.drafts[cur];saveL('drafts')}
   if(!cur||isPin(cur)||!isMember())return;
   if(tOn!==cur){stopTyping();tOn=cur;const r=ref(db,'typing/'+cur+'/'+uid);set(r,true);onDisconnect(r).remove()}
   clearTimeout(tt);tt=setTimeout(stopTyping,2500);
@@ -688,6 +699,7 @@ $('txt').oninput=()=>{
 async function post(m){
   if(!cur||!isMember())return;
   const id=cur;
+  if(!canPostIn(curData)){toast('گروه بسته است');return}
   if(curData.type==='dm'){const o=Object.keys(curData.members||{}).find(k=>k!==uid),er=o?await dmAllowed(o):'';if(er){toast(er);return}}
   m.uid=uid;m.ts=Date.now();
   if(replyTo){m.reply=replyTo;replyTo=null;$('rp').classList.add('hide')}
@@ -695,7 +707,7 @@ async function post(m){
   if(!isPin(id))await update(ref(db,'chats/'+id),{lastTs:m.ts,lastBy:uid,lastText:m.text||(m.img?'عکس':m.poll?'نظرسنجی':m.audio?'موسیقی':'فایل')});
   if(id===botId()&&m.text)botReply(m.text);
 }
-$('send').onclick=()=>{const t=$('txt').value.trim();if(!t)return;$('txt').value='';post({text:t}).catch(()=>toast('ارسال نشد'))};
+$('send').onclick=()=>{const t=$('txt').value.trim();if(!t)return;$('txt').value='';delete LOCAL.drafts[cur];saveL('drafts');post({text:t}).catch(()=>toast('ارسال نشد'))};
 $('txt').onkeydown=e=>{if(e.key==='Enter'&&!e.shiftKey&&innerWidth>760){e.preventDefault();$('send').click()}};
 const sendImage=async()=>{const f=await pick($('fImg'));if(f)post({img:await shrink(f,1100,.72)}).catch(()=>toast('ارسال نشد'))};
 const sendFile=async()=>{const f=await pick($('fAny'));if(!f)return;
@@ -731,6 +743,9 @@ $('chatMenuBtn').onclick=e=>{
   e.stopPropagation();const m=$('chatMenu');m.innerHTML='';const d=curData,g=d.type==='group'||d.type==='channel';
   const add=(t,f)=>{const b=el('button',null,t);b.onclick=f;m.append(b)};
   add('اطلاعات',infoModal);
+  add(LOCAL.muted[cur]?'فعال کردن صدا':'بی‌صدا کردن',()=>{if(LOCAL.muted[cur])delete LOCAL.muted[cur];else LOCAL.muted[cur]=1;saveL('muted');renderList();toast(LOCAL.muted[cur]?'بی‌صدا شد':'صدا فعال شد')});
+  if(!isPin(cur))add(LOCAL.pinned[cur]?'برداشتن سنجاق چت':'سنجاق چت',()=>{if(LOCAL.pinned[cur])delete LOCAL.pinned[cur];else LOCAL.pinned[cur]=1;saveL('pinned');renderList();toast(LOCAL.pinned[cur]?'چت سنجاق شد':'سنجاق برداشته شد')});
+  add('پاک کردن تاریخچه',()=>{if(!confirm('پیام‌های این چت فقط برای تو پاک شود؟'))return;LOCAL.cleared[cur]=Date.now();saveL('cleared');openChat(cur,curData);toast('پاک شد')});
   if(g)add('اعضا',membersModal);
   if(d.type==='dm'&&d.vid){
     add('پروفایل کاربر',async()=>userModal(d.vid,await getUser(d.vid)));
@@ -741,12 +756,21 @@ $('chatMenuBtn').onclick=e=>{
   if(!isPin(cur))add('افزودن به پوشه',()=>folderPick(cur));
   if(!isPin(cur))add('جست‌وجو در پیام‌ها',()=>{$('cs').classList.toggle('hide');$('csq').focus()});
   if(g&&isMember()&&staff(d))add('ثبت استوری '+kind(d),()=>addStoryModal(cur));
+  if(d.type==='group'&&isMember()&&staff(d))add(d.closed?'باز کردن گروه':'بستن گروه',toggleClosed);
   if(g&&isMember()&&staff(d))add('ویرایش اطلاعات',editChatModal);
   if(g&&d.handle)add('کپی لینک دعوت',()=>copyT(SITE+'?c='+d.handle));
   if(g&&isMember())add('ترک '+kind(d),leave);
   if(g&&isOwner(d))add('حذف '+kind(d),delChat);
   toggle('chatMenu');
 };
+async function toggleClosed(){
+  const d=curData,id=cur,v=!d.closed;
+  try{
+    await update(ref(db,'chats/'+id),{closed:v?true:null});
+    await push(ref(db,'messages/'+id),{uid,ts:Date.now(),sys:true,text:v?'گروه بسته شد؛ فقط مدیران می‌توانند پیام بدهند':'گروه باز شد؛ همه اعضا می‌توانند پیام بدهند'});
+    toast(v?'گروه بسته شد':'گروه باز شد');
+  }catch(e){toast('انجام نشد')}
+}
 async function delChat(){
   const d=curData,id=cur;
   if([OFFICIAL,OFFICIAL_GROUP].includes(d.handle))return toast('گروه و کانال رسمی ماکوان قابل حذف نیست');
@@ -923,11 +947,10 @@ function privacySection(b){
 }
 let advonUid=null;const mcache={};
 const canManageStory=id=>id===uid||(!!chats[id]&&staff(chats[id]));
-let officialChId=null;
-const isVer=id=>!!id&&(id===advonUid||id===officialChId);
+const isVer=id=>!!id&&(id===advonUid||verIds.has(id));
 function vbadge(){const i=el('i','vf');i.title='تأیید شده';i.innerHTML='<svg viewBox="0 0 24 24"><path fill="#1d9bf0" d="M12 1l2.6 1.9 3.2-.1 1 3.1 2.6 1.9-1 3.1 1 3.1-2.6 1.9-1 3.1-3.2-.1L12 23l-2.6-1.9-3.2.1-1-3.1-2.6-1.9 1-3.1-1-3.1 2.6-1.9 1-3.1 3.2.1z"/><path d="M8 12.2l2.6 2.6L16 9.4" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';return i}
 async function resolveAdvon(){
-  try{advonUid=(await get(ref(db,'usernames/advon'))).val()||null;officialChId=(await get(ref(db,'handles/'+OFFICIAL))).val()||null}catch(e){}
+  try{advonUid=(await get(ref(db,'usernames/advon'))).val()||null;for(const h of VERIFIED){const x=(await get(ref(db,'handles/'+h))).val();if(x)verIds.add(x)}}catch(e){}
   watchStories();$('rpBtn').classList.toggle('hide',advonUid!==uid);renderList();if(cur&&curData&&curData.type)head();
 }
 async function fetchStories(id){
@@ -1555,7 +1578,7 @@ const EN={
 "آیدی، نام کاربری یا شماره":"ID, username or number","ارسال نظر":"Send comment","انتشار پست":"Publish post","این پست حذف شود":"Delete this post","این کاربر هنوز پستی نگذاشته":"This user hasn't posted yet","بازگشت":"Back","جست‌وجوی کاربر":"Search users","حذف پست":"Delete post","دریافت پست‌ها ممکن نشد":"Could not load posts","متن پست":"Post text","متن یا عکس بنویس":"Add text or a photo","نظر خودت را بنویس":"Write your comment","نظرات":"Comments","هنوز نظری نیست":"No comments yet","هنوز پستی نیست؛ اولین پست را تو بگذار":"No posts yet; be the first to post","پست":"Post","پست جدید":"New post","پست در دسترس نیست":"Post unavailable","پست منتشر شد":"Post published","پست‌ها":"Posts","چیزی بنویس یا عکسی منتشر کن":"Write something or share a photo","کاربری پیدا نشد":"No user found","گزارش پست":"Report post","کپی لینک":"Copy link","چت":"chats","عکس":"Photo","نام":"Name","حذف":"Delete","شفق":"Aurora","صدا":"Sound","عضو":"members","رأی":"votes","آمار":"Stats","اعضا":"Members","بستن":"Close","بنفش":"Violet","ترک":"Leave","تماس":"Call","جدید":"New","حساب":"Account","درود":"Hello","دریا":"Sea","دعوت":"Invite","ربات":"Bot","روشن":"Light","زبان":"Language","زمرد":"Emerald","سؤال":"Question","ساخت":"Create","ساده":"Plain","ساعت":"time","سایت":"site","سایر":"Other","سلام":"Hello","غروب":"Sunset","فایل":"File","لینک":"link","مالک":"Owner","مدیر":"Admin","پاسخ":"Reply","پیام":"Message","گروه":"Group","ارسال":"Send","امروز":"Today","تاریخ":"Date","تاریک":"Dark","حرف A":"Letter A","خاموش":"Off","دستور":"command","دیروز":"Yesterday","ذخیره":"Save","نقش":"Role","پیامک":"SMS","پیوست":"Attach","کاربر":"User","کانال":"Channel","کهربا":"Amber","گل‌رز":"Rose","آنلاین":"Online","استوری":"Story","افزودن":"Add","انتشار":"Publish","خودکار":"Auto","دستگاه":"Device","دلیل":"Reason","راهنما":"Help","رنگ تم":"Theme color","مرورگر":"Browser","ماکوان":"MACuan","موسیقی":"Music","هیچ‌کس":"Nobody","همه":"Everyone","ویرایش":"Edit","پیوستن":"Join","گزارش":"Report","گزینه":"Option","بازدید":"views","اطلاعات":"Info","اقیانوس":"Ocean","تنظیمات":"Settings","جست‌وجو":"Search","نظرسنجی":"Poll","پروفایل":"Profile","پسندیدن":"Like","پشتیبان":"support","کاربران":"Users","گروه‌ها":"Groups","گفت‌وگو":"Chats","بازدیدها":"Views","بیوگرافی":"Bio","توضیحات":"Description","موبایل":"Mobile","پشتیبانی":"Support","کامپیوتر":"Computer","کانال‌ها":"Channels","مخاطبین":"Contacts","اختیاری":"optional","انگلیسی":"English","مثل":"like","متن":"Text","یا":"or","آیدی":"ID","فعال":"On","غیرفعال":"Off",
 "حذف شد":"Deleted","کپی":"Copy","کپی شد":"Copied","ثبت نشد":"Not saved","حذف عکس":"Remove photo","ارسال شد":"Sent","اضافه شد":"Added","جعل هویت":"Impersonation","حذف پوشه":"Delete folder","ذخیره شد":"Saved","ساخته شد":"Created","نام پوشه":"Folder name","پاسخ به":"Reply to","ارسال نشد":"Not sent","استوری من":"My story","استوری‌ها":"Stories","انجام نشد":"Failed","تأیید شده":"Verified","تم و ظاهر":"Theme & appearance","دستگاه‌ها":"Devices","ذخیره نشد":"Could not save","رسیدگی شد":"Mark as handled","صدای پیام":"Message sound","پوشه جدید":"New folder","پیام شخصی":"Direct messages","گروه جدید":"New group","گوشی/تبلت":"Phone/tablet","ارسال پیام":"Send message","انتشار نشد":"Could not publish","ثبت استوری":"Post story","حالت نمایش":"Display mode","در مخاطبین":"In contacts","دعوت مخاطب":"Invite contact","رفع مسدودی":"Unblock","سنجاق کردن":"Pin","لغو مدیریت":"Remove admin","مخاطب جدید":"New contact","مخاطبین من":"My contacts","مخصوص خودت":"Just for you","مدت‌ها پیش":"Long ago","مسدود کردن":"Block","نقض حق نشر":"Copyright violation","کانال جدید":"New channel","گزارش پیام":"Report message","گزارش‌ها":"Reports","ارسال به":"Send to","ارسال گزارش":"Send report","استوری جدید":"New story","ربات ماکوان":"MACuan bot","طرح خاکستری":"Gray pattern","عکس پروفایل":"Profile photo","فوروارد از":"Forwarded from","ویرایش پوشه":"Edit folder","ویرایش پیام":"Edit message","پس‌زمینه چت":"Chat background","گزارش کاربر":"Report user","گزارشی نیست":"No reports","اشتراک‌گذاری":"Share","انتخاب شده":"Selected","برداشتن پسند":"Unlike","خروج از حساب":"Log out","رسیدگی شده":"Handled","شماره موبایل":"Mobile number","نظرسنجی جدید":"New poll","ورود با گوگل":"Sign in with Google","این دستگاه":"this device","ویرایش‌شده":"edited","ارتقا به مدیر":"Promote to admin","این خودت هستی":"This is you","برداشتن سنجاق":"Unpin","دعوت با پیامک":"Invite via SMS","رفع مسدودی شد":"Unblocked","عضوی پیدا نشد":"No members found","محتوای مستهجن":"Adult content","مدیریت لغو شد":"Admin role removed","مشاهده استوری":"View story","پروفایل کاربر":"User profile","کاربران مسدود":"Blocked users","کانال رسمی":"Official channel","کپی لینک دعوت":"Copy invite link","گزارش‌دهنده":"Reporter","آخرین بازدید":"Last seen","آخرین فعالیت":"Last active","افزودن به پوشه":"Add to folder","حذف از مخاطبین":"Remove from contacts","در حال تایپ":"Typing","نام را وارد کن":"Enter a name","ویرایش اطلاعات":"Edit info","پایان این نشست":"End this session","پوشه‌های گفتگو":"Chat folders","پیام سنجاق‌شده":"Pinned message","کاربر مسدود شد":"User blocked","کاربران ماکوان":"MACuan users","استوری منتشر شد":"Story published","بازدیدکنندگان":"Viewers","جست‌وجو در اعضا":"Search members","دستگاه‌های فعال":"Active devices","نشست پایان یافت":"Session ended","هنوز چتی ندارید":"You don't have any chats yet","گزارش‌های رسیده":"Received reports","ارسال به چت دیگر":"Send to another chat","حذف عکس پس‌زمینه":"Remove background photo","شماره پشتیبانی":"Support number","مخاطبین و استوری":"Contacts & stories","موردی انتخاب نشد":"Nothing selected","ورود انجام نشد":"Sign-in failed","چت‌های داخل پوشه":"Chats in folder","از مخاطبین حذف شد":"Removed from contacts","استوری جدیدی نیست":"No new stories","اشتراک‌گذاری لینک":"Share link","افزودن به مخاطبین":"Add to contacts","این پوشه حذف شود":"Delete this folder","این پیام حذف شود":"Delete this message","تعداد چت‌های تو":"Your chats","محتوای خشونت‌آمیز":"Violent content","نتیجه‌ای پیدا نشد":"No results found","کانال رسمی ماکوان":"Official MACuan channel","اندازه متن پیام‌ها":"Message text size","این آیدی گرفته شده":"This ID is taken","این کاربر حذف شود":"Remove this user","برای تغییر عکس بزن":"Tap to change photo","به مدیر ارتقا یافت":"Promoted to admin","جست‌وجو در مخاطبین":"Search contacts","جست‌وجو در پیام‌ها":"Search messages","حریم خصوصی و امنیت":"Privacy & security","در حال بارگذاری":"Loading","هنوز کسی ندیده است":"No one has seen it yet","پیام در دسترس نیست":"Message unavailable","پیام‌های ذخیره‌شده":"Saved messages","کانال‌ها و گروه‌ها":"Channels & groups","گروه‌ها و کانال‌ها":"Groups & channels","ارسال دعوت با پیامک":"Send invite via SMS","انتخاب عکس از گالری":"Choose photo from gallery","این استوری حذف شود":"Delete this story","برای انتخاب عکس بزن":"Tap to choose a photo","به مخاطبین اضافه شد":"Added to contacts","دستگاه‌های وارد شده":"Signed-in devices","محتوا در دسترس نیست":"Content unavailable","مخاطبین و حساب رسمی":"Contacts & official account","نام پوشه را وارد کن":"Enter a folder name","آیدی عمومی":"Public ID","پروفایل خودت را بساز":"Create your profile","کلاهبرداری یا فیشینگ":"Scam or phishing","برای همیشه حذف شود":"— delete permanently",
 "آخرین بازدید به‌تازگی":"Last seen recently","آخرین بازدید و آنلاین":"Last seen & online","آیدی حداقل ۳ حرف باشد":"ID must be at least 3 characters","اسپم یا تبلیغات مزاحم":"Spam or unwanted ads","توضیح بیشتر":"More details","کسی را مسدود نکرده‌ای":"You haven't blocked anyone","گزارش ارسال شد؛ ممنون":"Report sent; thank you","هنوز پوشه‌ای نساخته‌ای":"You haven't created any folders yet","پاسخ‌گوی خودکار ماکوان":"MACuan auto-responder","این شماره قبلاً ثبت شده":"This number is already registered","دلیل گزارش را انتخاب کن":"Select a reason for the report","عکس، ویدیو یا متن بنویس":"Add a photo, video or text","مالک نمی‌تواند خارج شود":"The owner cannot leave","پایان همه نشست‌های دیگر":"End all other sessions","یک گفت‌وگو را انتخاب کن":"Select a chat","این نام کاربری گرفته شده":"This username is taken","آیدی رسمی قابل تغییر نیست":"The official ID cannot be changed","از حساب خود خارج می‌شوید":"Log out of your account","این کاربر را مسدود کرده‌اید":"You have blocked this user","حجم عکس برای ذخیره زیاد است":"Photo is too large to save","ذخیره در پیام‌های ذخیره‌شده":"Save to saved messages","دسترسی به گزارش‌ها ممکن نیست":"Cannot access reports","دوستانت را به ماکوان دعوت کن":"Invite your friends to MACuan","همه نشست‌های دیگر پایان یافت":"All other sessions ended","سؤال و حداقل ۲ گزینه لازم است":"A question and at least 2 options are required","کاربری با این مشخصات پیدا نشد":"No user found with these details","چه کسی می‌تواند به من پیام دهد":"Who can message me","حداکثر حجم موسیقی ۳ مگابایت است":"Music files can be at most 3 MB","نام کاربری":"Username","حجم ویدیو بیشتر از ۴ مگابایت است":"Video is larger than 4 MB","حداکثر حجم فایل ۷۰۰ کیلوبایت است":"Files can be at most 700 KB","شما توسط این کاربر مسدود شده‌اید":"You have been blocked by this user","پیدا کردن دوستان از مخاطبین گوشی":"Find friends from phone contacts","عکس‌های پروفایل (برای انتخاب بزن":"Profile photos (tap to select","جست‌وجوی شماره، @آیدی، گروه یا کانال":"Search number, @ID, group or channel","گروه و کانال رسمی ماکوان قابل حذف نیست":"The official MACuan group and channel cannot be deleted","اتصال برقرار نشد؛ صفحه را دوباره باز کن":"Could not connect; reopen the page","این کاربر فقط از مخاطبینش پیام می‌پذیرد":"This user only accepts messages from contacts","فقط مدیران می‌توانند در کانال پیام بدهند":"Only admins can post in this channel","شماره موبایل معتبر نیست (مثل 09123456789":"Invalid mobile number (like 09123456789","نام کاربری حداقل ۳ حرف (a-z، عدد و _) باشد":"Username must be at least 3 characters (a-z, digits and _)","گروه رسمی ماکوان؛ اینجا با هم گفت‌وگو کنید":"Official MACuan group; chat together here","ویدیو قابل پخش نیست یا بیشتر از ۳۰ ثانیه است":"Video cannot be played or is longer than 30 seconds","با تغییر زبان، برنامه دوباره بارگذاری می‌شود":"The app reloads when you change the language","برای راهنمایی یا گزارش مشکل با ما در تماس باش":"Contact us for help or to report a problem","این مرورگر دسترسی به مخاطبین گوشی را پشتیبانی نمی‌کند":"This browser does not support access to phone contacts","مخاطبین من یعنی فقط کسانی که در فهرست مخاطبین تو هستند":"\"My contacts\" means only people in your contacts list","مخاطبی نیست":"No contacts","از «مخاطب جدید» یا «دعوت مخاطب» استفاده کن":"Use \"New contact\" or \"Invite contact\"","پیام‌رسان سریع و زیبا؛ با حساب گوگل وارد شو و گفت‌وگو را شروع کن":"A fast, beautiful messenger; sign in with your Google account and start chatting","عکس یا ویدیو (حداکثر ۳۰ ثانیه و ۴ مگابایت)؛ ۲۴ ساعت بعد حذف می‌شود":"Photo or video (max 30 seconds and 4 MB); deleted after 24 hours","چتی در این بخش نیست":"No chats in this section","با جست‌وجوی آیدی کسی را پیدا کن یا گروه بساز":"Find someone by searching their ID, or create a group","کاربر مسدودشده نمی‌تواند به تو پیام بدهد. تنظیمات حریم خصوصی در برنامه اعمال می‌شود":"A blocked user cannot message you. Privacy settings are enforced in the app","چت‌ها را در پوشه‌ها دسته‌بندی کن؛ پوشه‌ها کنار تب‌های بالای فهرست گفتگو نشان داده می‌شوند. (روی همین دستگاه ذخیره می‌شود":"Organize chats into folders; folders appear next to the tabs above the chat list. (Saved on this device",
-"ترک گروه":"Leave group","ترک کانال":"Leave channel","حذف گروه":"Delete group","حذف کانال":"Delete channel","ویرایش گروه":"Edit group","ویرایش کانال":"Edit channel","ثبت استوری گروه":"Post group story","ثبت استوری کانال":"Post channel story","پیوستن به گروه":"Join group","پیوستن به کانال":"Join channel","حذف از گروه":"Remove from group","حذف از کانال":"Remove from channel","نقش: عضو":"Role: member","نقش: مالک":"Role: owner","نقش: مدیر":"Role: admin","استوری گروه":"Group story","استوری کانال":"Channel story","ثبت استوری":"Post story","پیامی ارسال نشد":"Message not sent"
+"ترک گروه":"Leave group","ترک کانال":"Leave channel","حذف گروه":"Delete group","حذف کانال":"Delete channel","ویرایش گروه":"Edit group","ویرایش کانال":"Edit channel","ثبت استوری گروه":"Post group story","ثبت استوری کانال":"Post channel story","پیوستن به گروه":"Join group","پیوستن به کانال":"Join channel","حذف از گروه":"Remove from group","حذف از کانال":"Remove from channel","نقش: عضو":"Role: member","نقش: مالک":"Role: owner","نقش: مدیر":"Role: admin","استوری گروه":"Group story","استوری کانال":"Channel story","ثبت استوری":"Post story","پیامی ارسال نشد":"Message not sent","بستن گروه":"Close group","باز کردن گروه":"Open group","بسته":"closed","گروه بسته شد":"Group closed","گروه باز شد":"Group opened","گروه بسته است":"Group is closed","گروه بسته است؛ فقط مدیران می‌توانند پیام بدهند":"Group is closed; only admins can post","گروه بسته شد؛ فقط مدیران می‌توانند پیام بدهند":"Group closed; only admins can post","گروه باز شد؛ همه اعضا می‌توانند پیام بدهند":"Group opened; all members can post","بی‌صدا کردن":"Mute","فعال کردن صدا":"Unmute","بی‌صدا شد":"Muted","صدا فعال شد":"Unmuted","سنجاق چت":"Pin chat","برداشتن سنجاق چت":"Unpin chat","چت سنجاق شد":"Chat pinned","سنجاق برداشته شد":"Unpinned","پاک کردن تاریخچه":"Clear history","پاک شد":"Cleared","پیش‌نویس":"Draft","پیام‌های این چت فقط برای تو پاک شود":"Clear this chat's messages for you only"
 };
 const PUNL=/^[()«»:.,،؛؟?!…•—＋@"'\[\]-]+/,PUNT=/[()«»:.,،؛؟?!…•—"'\[\]-]+$/;
 function trText(s){
