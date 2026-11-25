@@ -25,7 +25,7 @@
 <style>
 :root{--bg:#000;--panel:rgba(6,12,8,.86);--line:rgba(74,222,128,.18);--ink:#4ade80;--mute:#2fa862;--a:#16a34a;--b:#86efac;--me:linear-gradient(135deg,#052e16,#14532d);--r:18px;--fs:15px}
 *{box-sizing:border-box;margin:0;font-family:Vazirmatn,Tahoma,sans-serif}
-html,body{height:100%;background:var(--bg);color:var(--ink);overflow:hidden}
+html,body{height:100%;background:var(--bg);color:var(--ink);overflow:hidden;overscroll-behavior:none}
 button,input,textarea{font:inherit;color:inherit;border:0;outline:0}
 button{cursor:pointer;background:none}
 .hide{display:none!important}
@@ -44,7 +44,7 @@ input[type=range]{padding:0;border:0;background:none;accent-color:var(--a)}
 .logo small{display:block;font-size:14px;font-weight:300;color:var(--mute);letter-spacing:6px;-webkit-text-fill-color:var(--mute)}
 #login p{color:var(--mute);margin:18px 0 28px}
 #gbtn{background:#fff;color:#222;width:100%;padding:13px;border-radius:14px;font-weight:600;display:flex;gap:10px;justify-content:center;align-items:center}
-#app{height:100%;display:flex}
+#app{height:100%;height:100dvh;display:flex}
 #side{width:360px;max-width:100%;display:flex;flex-direction:column;border-inline-end:1px solid var(--line)}
 #tabs{display:flex;gap:6px;padding:10px 12px 0;overflow-x:auto;scrollbar-width:none}
 #tabs::-webkit-scrollbar{display:none}
@@ -53,7 +53,7 @@ input[type=range]{padding:0;border:0;background:none;accent-color:var(--a)}
 .top{display:flex;gap:8px;align-items:center;padding:10px 12px;position:relative}
 .ib{width:40px;height:40px;border-radius:12px;font-size:20px;flex:none}
 .ib:hover{background:rgba(255,255,255,.1)}
-#list,.pane{flex:1;overflow:auto;min-height:0}
+#list,.pane{flex:1;overflow:auto;min-height:0;overscroll-behavior:contain}
 .pane{padding:16px;display:flex;flex-direction:column;gap:12px}
 .pane .sec{padding:4px 0}
 .row{display:flex;gap:12px;align-items:center;padding:11px 14px;cursor:pointer}
@@ -227,11 +227,25 @@ body.light .sv .sheet{background:#07110a}
 .mon{height:10px;border-radius:6px;background:rgba(255,255,255,.12);overflow:hidden}.mon i{display:block;height:100%;background:linear-gradient(90deg,#16a34a,#86efac)}
 #app.full #side{width:100%;border-inline-end:0}#app.full #main{display:none}
 #app.full .pane{padding-inline:max(16px,calc((100vw - 760px)/2))}
+#brand{position:relative;display:flex;justify-content:center;align-items:center;height:46px;flex:none;overflow:hidden}
+#brand .bn{font-size:21px;font-weight:800;letter-spacing:.5px;color:var(--ink);text-shadow:0 0 14px rgba(74,222,128,.55)}
+#brand .orx{position:absolute;left:50%;top:50%;width:0;height:0;animation:ox 3.6s ease-in-out infinite alternate}
+#brand .ory{width:0;height:0;animation:oy 3.6s ease-in-out infinite alternate;animation-delay:-1.8s}
+#brand .pl{position:absolute;width:18px;height:18px;margin:-9px 0 0 -9px;fill:var(--b);filter:drop-shadow(0 0 5px var(--a));animation:spin 7.2s linear infinite}
+@keyframes ox{from{transform:translateX(-92px)}to{transform:translateX(92px)}}
+@keyframes oy{from{transform:translateY(-15px)}to{transform:translateY(15px)}}
+@keyframes spin{from{transform:rotate(180deg)}to{transform:rotate(-180deg)}}
+.ico{display:inline-flex;width:24px;height:24px;margin-inline-end:10px;flex:none}.ico svg{width:100%;height:100%}
+.lbx{position:fixed;inset:0;background:rgba(0,0,0,.95);z-index:120;display:grid;place-items:center}.lbx img{max-width:100%;max-height:84%;object-fit:contain}.lbx .ib{position:absolute;top:16px;inset-inline-end:16px;background:rgba(255,255,255,.12);border-radius:50%}.lbx .btn{position:absolute;bottom:26px}
+select{background:rgba(255,255,255,.08);border:1px solid var(--line);border-radius:14px;padding:11px 14px;width:100%;color:inherit}select option{background:#07110a}
+@keyframes vp{50%{transform:scale(1.12)}}
 #sbar2{display:flex;gap:12px;overflow-x:auto;padding:10px 12px 2px;flex:none;scrollbar-width:none}#sbar2::-webkit-scrollbar{display:none}#sbar2:empty{display:none}
-#adb{padding:8px 12px 0}
-.adc{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:16px;border:1px solid var(--line);background:linear-gradient(135deg,rgba(22,163,74,.28),rgba(5,46,22,.6));cursor:pointer;min-height:60px;position:relative}
-.adc img{width:56px;height:56px;border-radius:12px;object-fit:cover;flex:none}
-.adt{flex:1;min-width:0}.adt b{display:block;font-size:14.5px}.adt span{display:block;font-size:12.5px;color:var(--mute)}
+#adb{padding:6px 12px 0}
+#adb{flex:none}
+.adc{display:flex;align-items:center;gap:10px;padding:5px 10px;border-radius:12px;border:1px solid var(--line);background:linear-gradient(135deg,rgba(22,163,74,.28),rgba(5,46,22,.6));cursor:pointer;min-height:40px;position:relative}
+.adc img{width:34px;height:34px;border-radius:8px;object-fit:cover;flex:none}
+.adt{flex:1;min-width:0}.adt b{display:block;font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.adt span{display:block;font-size:11px;color:var(--mute);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.adc .tag{margin:0;font-size:9px}
 .spv{position:relative;width:100%;max-width:300px;aspect-ratio:9/14;margin:0 auto;border-radius:28px;overflow:hidden;display:grid;place-items:center;background:#000;border:1px solid var(--line);box-shadow:0 16px 40px rgba(0,0,0,.5);flex:none}
 .spv video,.spv img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .spc{position:relative;z-index:2;padding:20px;text-align:center;font-size:22px;font-weight:700;word-break:break-word;white-space:pre-wrap;text-shadow:0 1px 8px rgba(0,0,0,.6);color:#fff}
@@ -250,12 +264,18 @@ body.light .sv .sheet{background:#07110a}
     <div class="logo">MACuan<small>CHT</small></div>
     <p>پیام‌رسان سریع و زیبا؛ با حساب گوگل وارد شو و گفت‌وگو را شروع کن.</p>
     <button id="gbtn"><svg width="20" height="20" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9 3.6l6.7-6.7C35.700 2.400 30.300 0 24 0 14.600 0 6.500 5.400 2.600 13.200l7.800 6C12.300 13.600 17.700 9.500 24 9.500z"/><path fill="#4285F4" d="M46.500 24.500c0-1.600-.1-3.100-.4-4.500H24v9h12.700c-.6 3-2.300 5.500-4.800 7.200l7.600 5.900c4.400-4.100 7-10.100 7-17.600z"/><path fill="#FBBC05" d="M10.400 28.700c-.5-1.400-.8-3-.8-4.700s.3-3.200.8-4.700l-7.800-6C.9 16.500 0 20.100 0 24s.9 7.500 2.600 10.700l7.800-6z"/><path fill="#34A853" d="M24 48c6.500 0 11.900-2.100 15.900-5.800l-7.600-5.900c-2.100 1.400-4.900 2.300-8.300 2.300-6.300 0-11.700-4.200-13.600-9.900l-7.800 6C6.500 42.600 14.600 48 24 48z"/></svg>ورود با گوگل</button>
+    <div class="mut" style="margin:16px 0 8px">یا با ایمیل وارد شو</div>
+    <input id="lem" type="email" placeholder="ایمیل" autocomplete="email" style="direction:ltr;margin-bottom:8px">
+    <input id="lpw" type="password" placeholder="رمز عبور" autocomplete="current-password" style="direction:ltr;margin-bottom:10px">
+    <div class="row2"><button class="btn" id="lin">ورود</button><button class="btn g" id="lup">ثبت‌نام</button></div>
+    <button id="lfg" class="mut" style="margin-top:12px;text-decoration:underline">فراموشی رمز عبور</button>
     <div class="err" id="lerr"></div>
   </div>
 </div>
 
 <div id="app" class="hide">
   <aside id="side" class="glass">
+    <div id="brand"><span class="bn">ماکوان چت</span><div class="orx"><div class="ory"><svg class="pl" viewBox="0 0 24 24"><path d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5z"/></svg></div></div></div>
     <div id="sbar2"></div>
     <div class="top" id="topbar">
       <button class="ib" id="menuBtn">☰</button>
@@ -309,6 +329,7 @@ body.light .sv .sheet{background:#07110a}
         <button data-a="file">فایل</button>
         <button data-a="music">موسیقی</button>
         <button data-a="loc">مکان فعلی</button>
+        <button data-a="voice">ضبط پیام صوتی</button>
         <button data-a="poll" id="pollItem">نظرسنجی</button>
       </div>
       <div id="bar" class="glass">
@@ -331,7 +352,7 @@ body.light .sv .sheet{background:#07110a}
 
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import {getAuth,GoogleAuthProvider,signInWithPopup,onAuthStateChanged,signOut,setPersistence,browserLocalPersistence} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import {getAuth,GoogleAuthProvider,signInWithPopup,onAuthStateChanged,signOut,setPersistence,browserLocalPersistence,signInWithEmailAndPassword,createUserWithEmailAndPassword,sendPasswordResetEmail} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import {getDatabase,ref,get,set,update,push,remove,onValue,onChildAdded,onChildChanged,onChildRemoved,query,orderByKey,startAt,endAt,limitToLast,serverTimestamp,onDisconnect} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
 const app=initializeApp({
@@ -345,9 +366,9 @@ const app=initializeApp({
 });
 const auth=getAuth(app),db=getDatabase(app);
 setPersistence(auth,browserLocalPersistence).catch(()=>{});
-const INSTA='https://www.instagram.com/macuancht?cnvx=ZGVveDQ5N3k3NmNo',SITE='https://gamengrahman8-dot.github.io/MACuan-cht/',SUPPORT='09011268205',OFFICIAL='macuan';
+const TGL='https://t.me/MACuancht',INSTA='https://www.instagram.com/macuancht?cnvx=ZGVveDQ5N3k3NmNo',SITE='https://gamengrahman8-dot.github.io/MACuan-cht/',SUPPORT='09011268205',OFFICIAL='macuan';
 const $=id=>document.getElementById(id);
-let LOCAL={muted:{},pinned:{},cleared:{},drafts:{}};
+let LOCAL={muted:{},pinned:{},cleared:{},drafts:{},slow:{}};
 const lsGet=(k,d)=>{try{return JSON.parse(localStorage.getItem('mc_'+k+'_'+uid))||d}catch(e){return d}};
 const saveL=k=>{try{localStorage.setItem('mc_'+k+'_'+uid,JSON.stringify(LOCAL[k]))}catch(e){}};
 const canPostIn=d=>!!d&&!!(d.members&&d.members[uid])&&((d.type!=='channel'&&!(d.type==='group'&&d.closed))||staff(d));
@@ -371,7 +392,13 @@ async function shrink(f,max,q){
 }
 const clean=s=>(s||'').toLowerCase().replace(/[^a-z0-9_]/g,'');
 const getUser=async id=>ucache[id]||(ucache[id]=(await get(ref(db,'users/'+id))).val()||{name:'کاربر'});
-const linkify=(d,t)=>t.split(/(https?:\/\/\S+)/).forEach(p=>{if(/^https?:\/\//.test(p)){const a=el('a','lk',p);a.href=p;a.target='_blank';a.rel='noopener';d.append(a)}else if(p)d.append(document.createTextNode(p))});
+const linkify=(d,t)=>t.split(/(https?:\/\/\S+)/).forEach(p=>{if(/^https?:\/\//.test(p)){const a=el('a','lk',p);a.href=p;a.target='_blank';a.rel='noopener';d.append(a)}else if(p)fmt(d,p)});
+const FMT=/(\*\*[^*\n]+\*\*|__[^_\n]+__|`[^`\n]+`|~~[^~\n]+~~)/;
+const fmt=(d,t)=>t.split(FMT).forEach(p=>{if(!p)return;let n;
+  if(/^\*\*.+\*\*$/.test(p))n=el('b',null,p.slice(2,-2));else if(/^__.+__$/.test(p))n=el('i',null,p.slice(2,-2));
+  else if(/^`.+`$/.test(p)){n=el('code',null,p.slice(1,-1));n.style.cssText='font-family:monospace;background:rgba(255,255,255,.14);padding:1px 6px;border-radius:6px'}
+  else if(/^~~.+~~$/.test(p))n=el('s',null,p.slice(2,-2));else n=document.createTextNode(p);
+  d.append(n)});
 function beep(){try{const c=new (window.AudioContext||window.webkitAudioContext)(),o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.frequency.value=880;g.gain.value=.05;o.start();o.stop(c.currentTime+.12)}catch(e){}}
 async function copyT(t){try{await navigator.clipboard.writeText(t)}catch(e){const x=document.createElement('textarea');x.value=t;document.body.append(x);x.select();document.execCommand('copy');x.remove()}toast('کپی شد')}
 
@@ -414,6 +441,20 @@ try{matchMedia('(prefers-color-scheme: light)').addEventListener('change',()=>{i
 
 /* ---------- auth ---------- */
 $('gbtn').onclick=async()=>{try{await signInWithPopup(auth,new GoogleAuthProvider())}catch(e){$('lerr').textContent='ورود انجام نشد: '+e.code}};
+const AERR={'auth/invalid-credential':'ایمیل یا رمز عبور اشتباه است','auth/wrong-password':'ایمیل یا رمز عبور اشتباه است','auth/user-not-found':'ایمیل یا رمز عبور اشتباه است','auth/invalid-email':'ایمیل معتبر نیست','auth/email-already-in-use':'این ایمیل قبلاً ثبت شده است','auth/weak-password':'رمز عبور حداقل ۶ کاراکتر باشد','auth/missing-password':'رمز عبور را وارد کن','auth/operation-not-allowed':'ورود با ایمیل در Firebase فعال نیست','auth/too-many-requests':'تلاش بیش از حد؛ کمی بعد دوباره امتحان کن','auth/network-request-failed':'اتصال برقرار نشد'};
+const authErr=e=>AERR[e.code]||('ورود انجام نشد: '+e.code);
+const emailAuth=async mode=>{
+  const em=$('lem').value.trim(),pw=$('lpw').value,le=$('lerr');le.style.color='';le.textContent='';
+  if(!em||!pw){le.textContent='ایمیل و رمز عبور را وارد کن';return}
+  try{if(mode==='up')await createUserWithEmailAndPassword(auth,em,pw);else await signInWithEmailAndPassword(auth,em,pw)}catch(e){le.textContent=authErr(e)}
+};
+$('lin').onclick=()=>emailAuth('in');$('lup').onclick=()=>emailAuth('up');
+$('lpw').onkeydown=e=>{if(e.key==='Enter')emailAuth('in')};
+$('lfg').onclick=async()=>{
+  const em=$('lem').value.trim(),le=$('lerr');le.style.color='';
+  if(!em){le.textContent='ابتدا ایمیل را وارد کن';return}
+  try{await sendPasswordResetEmail(auth,em);le.style.color='#4ade80';le.textContent='لینک بازیابی به ایمیل ارسال شد'}catch(e){le.textContent=authErr(e)}
+};
 onAuthStateChanged(auth,async u=>{
   if(!u){uid=null;$('login').classList.remove('hide');$('app').classList.add('hide');$('splash').classList.add('hide');return}
   uid=u.uid;
@@ -425,7 +466,7 @@ onAuthStateChanged(auth,async u=>{
 });
 function startApp(){
   if(started)return;started=true;
-  ['muted','pinned','cleared','drafts'].forEach(k=>LOCAL[k]=lsGet(k,{}));
+  ['muted','pinned','cleared','drafts','slow'].forEach(k=>LOCAL[k]=lsGet(k,{}));
   loadFolders();
   listenCalls();loadBanner();
   presence();
@@ -643,7 +684,7 @@ async function openDM(o){
   const id=[uid,o].sort().join('_');
   if(!(await get(ref(db,'chats/'+id))).exists()){
     await update(ref(db),{['chats/'+id]:{type:'dm',members:{[uid]:true,[o]:true},lastTs:Date.now()},['userChats/'+uid+'/'+id]:true,['userChats/'+o+'/'+id]:true});
-  }
+  }else await update(ref(db),{['userChats/'+uid+'/'+id]:true}).catch(()=>{});
   $('q').value='';renderList();openChat(id);
 }
 
@@ -691,7 +732,7 @@ async function openChat(id,preset){
     if(m.uid!==uid&&!['dm','bot','saved'].includes(type)){const u=await getUser(m.uid),sp=el('span','n',u.name);if(isVer(m.uid))sp.append(vbadge());sp.style.cursor='pointer';sp.onclick=e=>{e.stopPropagation();userModal(m.uid,u)};d.append(sp)}
     if(m.fwd)d.append(el('span','fw','فوروارد از '+m.fwd));
     if(m.reply){const qq=el('div','q');qq.append(el('b',null,m.reply.n||''),el('span',null,m.reply.t||''));qq.onclick=e=>{e.stopPropagation();jumpTo(m.reply.k)};d.append(qq)}
-    if(m.img){const i=new Image();i.src=m.img;i.onclick=()=>{const w=window.open();w.document.write('<img style="max-width:100%" src="'+m.img+'">')};d.append(i)}
+    if(m.img){const i=new Image();i.src=m.img;i.onclick=()=>lightbox(m.img);d.append(i)}
     if(m.file){const a=el('a','f','فایل: '+m.file.name);a.href=m.file.data;a.download=m.file.name;d.append(a)}
     if(m.poll)d.append(pollEl(m,key,id));
     if(m.loc)d.append(locEl(m.loc));
@@ -820,11 +861,13 @@ async function post(m){
   if(!cur||!isMember())return;
   const id=cur;
   if(!canPostIn(curData)){toast('گروه بسته است');return}
+  if(curData.type==='group'&&curData.slow&&!staff(curData)){const w=(LOCAL.slow[id]||0)+curData.slow*1000-Date.now();if(w>0){toast('حالت آهسته: '+Math.ceil(w/1000)+' ثانیه صبر کن');return}}
   if(curData.type==='dm'){const o=Object.keys(curData.members||{}).find(k=>k!==uid),er=o?await dmAllowed(o):'';if(er){toast(er);return}}
   m.uid=uid;m.ts=Date.now();
   if(replyTo){m.reply=replyTo;replyTo=null;$('rp').classList.add('hide')}
   await push(ref(db,'messages/'+id),m);stopTyping();
   if(!isPin(id))await update(ref(db,'chats/'+id),{lastTs:m.ts,lastBy:uid,lastText:m.text||(m.img?'عکس':m.poll?'نظرسنجی':m.audio?'موسیقی':m.loc?'مکان':'فایل')});
+  if(curData&&curData.slow&&curData.type==='group'){LOCAL.slow[id]=Date.now();saveL('slow')}
   if(id===botId()&&m.text)botReply(m.text);
 }
 $('send').onclick=()=>{const t=$('txt').value.trim();if(!t)return;$('txt').value='';delete LOCAL.drafts[cur];saveL('drafts');post({text:t}).catch(()=>toast('ارسال نشد'))};
@@ -837,7 +880,7 @@ $('joinBtn').onclick=async()=>{if(curData.removed&&curData.removed[uid])return t
 $('csq').oninput=()=>{const v=$('csq').value.trim().toLowerCase();document.querySelectorAll('#msgs .m').forEach(m=>{m.style.display=(!v||m.textContent.toLowerCase().includes(v))?'':'none'})};
 const sendMusic=async()=>{const f=await pick($('fMusic'));if(!f)return;if(f.size>3*1024*1024)return toast('حداکثر حجم موسیقی ۳ مگابایت است');post({audio:{name:f.name,data:await readURL(f)}}).catch(()=>toast('ارسال نشد'))};
 $('attBtn').onclick=e=>{e.stopPropagation();toggle('attMenu')};
-$('attMenu').onclick=e=>{const a=e.target.dataset.a;if(a==='img')sendImage();if(a==='file')sendFile();if(a==='music')sendMusic();if(a==='poll')openPoll();if(a==='loc')sendLoc()};
+$('attMenu').onclick=e=>{const a=e.target.dataset.a;if(a==='img')sendImage();if(a==='file')sendFile();if(a==='music')sendMusic();if(a==='poll')openPoll();if(a==='loc')sendLoc();if(a==='voice')voiceRec()};
 const openPoll=()=>{
   modal((b,close)=>{
     b.append(el('h3',null,'نظرسنجی جدید'));
@@ -867,23 +910,35 @@ $('chatMenuBtn').onclick=e=>{
   e.stopPropagation();const m=$('chatMenu');m.innerHTML='';const d=curData,g=d.type==='group'||d.type==='channel';
   const add=(t,f)=>{const b=el('button',null,t);b.onclick=f;m.append(b)};
   if(g){add('ارسال گزارش',()=>reportModal(d.type,cur,d.name));toggle('chatMenu');return}
-  add('اطلاعات',infoModal);
-  add(LOCAL.muted[cur]?'فعال کردن صدا':'بی‌صدا کردن',()=>toggleMute(cur));
-  if(!isPin(cur))add(LOCAL.pinned[cur]?'برداشتن سنجاق چت':'سنجاق چت',()=>togglePin(cur));
-  add('پاک کردن تاریخچه',clearHist);
   if(d.type==='dm'&&d.vid){
-    add('پروفایل کاربر',async()=>userModal(d.vid,await getUser(d.vid)));
-    add(contacts[d.vid]?'حذف از مخاطبین':'افزودن به مخاطبین',()=>toggleContact(d.vid));
-    add(myBlocked[d.vid]?'رفع مسدودی':'مسدود کردن',()=>toggleBlock(d.vid));
     add('ارسال گزارش',()=>reportModal('user',d.vid,d.name));
+    add('پاک کردن تاریخچه',()=>clearHist(cur));
+    add('جست‌وجو در پیام‌ها',()=>{$('cs').classList.remove('hide');$('csq').focus()});
+    add(myBlocked[d.vid]?'رفع مسدودی':'مسدود کردن',()=>toggleBlock(d.vid));
+    add('حذف گفت‌وگو',()=>deleteChat(cur));
+  }else{
+    add('پاک کردن تاریخچه',()=>clearHist(cur));
+    add('جست‌وجو در پیام‌ها',()=>{$('cs').classList.remove('hide');$('csq').focus()});
   }
-  if(!isPin(cur))add('افزودن به پوشه',()=>folderPick(cur));
-  if(!isPin(cur))add('جست‌وجو در پیام‌ها',()=>{$('cs').classList.toggle('hide');$('csq').focus()});
   toggle('chatMenu');
 };
 const toggleMute=id=>{if(LOCAL.muted[id])delete LOCAL.muted[id];else LOCAL.muted[id]=1;saveL('muted');renderList();toast(LOCAL.muted[id]?'بی‌صدا شد':'صدا فعال شد')};
 const togglePin=id=>{if(LOCAL.pinned[id])delete LOCAL.pinned[id];else LOCAL.pinned[id]=1;saveL('pinned');renderList();toast(LOCAL.pinned[id]?'چت سنجاق شد':'سنجاق برداشته شد')};
-const clearHist=()=>{if(!confirm('پیام‌های این چت فقط برای تو پاک شود؟'))return;LOCAL.cleared[cur]=Date.now();saveL('cleared');openChat(cur,curData);toast('پاک شد')};
+const clearHist=id=>{
+  id=typeof id==='string'?id:cur;
+  if(!confirm('پیام‌های این چت فقط برای تو پاک شود؟'))return;
+  LOCAL.cleared[id]=Date.now();saveL('cleared');
+  if(id===cur)openChat(cur,curData);
+  renderList();toast('پاک شد');
+};
+async function deleteChat(id){
+  if(!confirm('این گفت‌وگو از لیست تو حذف شود؟'))return;
+  LOCAL.cleared[id]=Date.now();saveL('cleared');delete LOCAL.pinned[id];saveL('pinned');
+  try{await remove(ref(db,'userChats/'+uid+'/'+id))}catch(e){}
+  delete chats[id];
+  if(cur===id){if(stopMsgs)stopMsgs();cur=null;$('chat').classList.add('hide');$('ph').classList.remove('hide');$('app').classList.remove('in')}
+  renderList();toast('حذف شد');
+}
 function chatRowMenu(id,d){
   modal((b,close)=>{
     b.append(el('h3',null,d.name||''));
@@ -891,6 +946,13 @@ function chatRowMenu(id,d){
     add(LOCAL.pinned[id]?'برداشتن سنجاق چت':'سنجاق چت',()=>togglePin(id));
     add(LOCAL.muted[id]?'فعال کردن صدا':'بی‌صدا کردن',()=>toggleMute(id));
     add('افزودن به پوشه',()=>folderPick(id));
+    if(d.type==='dm'&&d.vid){
+      add('جست‌وجو در پیام‌ها',async()=>{await openChat(id);$('cs').classList.remove('hide');$('csq').focus()});
+      add('پاک کردن تاریخچه',()=>clearHist(id));
+      add(myBlocked[d.vid]?'رفع مسدودی':'مسدود کردن',()=>toggleBlock(d.vid));
+      add('ارسال گزارش',()=>reportModal('user',d.vid,d.name));
+      add('حذف گفت‌وگو',()=>deleteChat(id));
+    }
     closeBtn(b,close);
   });
 }
@@ -901,6 +963,38 @@ async function toggleClosed(){
     await push(ref(db,'messages/'+id),{uid,ts:Date.now(),sys:true,text:v?'گروه بسته شد؛ فقط مدیران می‌توانند پیام بدهند':'گروه باز شد؛ همه اعضا می‌توانند پیام بدهند'});
     toast(v?'گروه بسته شد':'گروه باز شد');
   }catch(e){toast('انجام نشد')}
+}
+async function voiceRec(){
+  if(!navigator.mediaDevices||!window.MediaRecorder)return toast('مرورگر از ضبط صدا پشتیبانی نمی‌کند');
+  let st;try{st=await navigator.mediaDevices.getUserMedia({audio:true})}catch(e){return toast('دسترسی به میکروفون داده نشد')}
+  const rec=new MediaRecorder(st),ch=[],t0=Date.now();let tm,cancelled=false,sent=false;
+  rec.ondataavailable=e=>{if(e.data.size)ch.push(e.data)};
+  rec.onstop=async()=>{
+    st.getTracks().forEach(t=>t.stop());clearInterval(tm);if(cancelled||sent)return;sent=true;
+    const bl=new Blob(ch,{type:rec.mimeType||'audio/webm'});
+    if(bl.size>900*1024)return toast('پیام صوتی خیلی طولانی است');
+    post({audio:{name:'Voice '+Math.max(1,Math.round((Date.now()-t0)/1000))+'s',data:await readURL(bl)}}).catch(()=>toast('ارسال نشد'));
+  };
+  rec.start();
+  modal((b,close)=>{
+    b.id='vrec';b.style.justifyContent='center';b.style.alignItems='center';
+    const dot=el('div');dot.style.cssText='width:96px;height:96px;border-radius:50%;background:#e11d48;box-shadow:0 0 0 14px rgba(225,29,72,.25);animation:vp 1.2s ease-in-out infinite';
+    const tt=el('h3',null,'00:00'),mt=el('div','mut','در حال ضبط...');
+    const send=el('button','btn','ارسال'),cn=el('button','btn g','لغو');send.style.minWidth=cn.style.minWidth='220px';
+    const stop=()=>{if(rec.state!=='inactive')rec.stop()};
+    send.onclick=()=>{stop();close()};cn.onclick=()=>{cancelled=true;stop();close()};
+    b.append(dot,tt,mt,send,cn);
+    tm=setInterval(()=>{
+      const sec=Math.floor((Date.now()-t0)/1000);tt.textContent=String(Math.floor(sec/60)).padStart(2,'0')+':'+String(sec%60).padStart(2,'0');
+      if(!document.getElementById('vrec')){cancelled=true;stop()}
+      else if(sec>=60){stop();close()}
+    },300);
+  });
+}
+function lightbox(src){
+  const w=el('div','lbx'),im=new Image(),x=el('button','ib','✕'),d=el('a','btn','دانلود');
+  im.src=src;d.href=src;d.download='macuan-photo.jpg';x.onclick=()=>w.remove();w.onclick=e=>{if(e.target===w)w.remove()};
+  w.append(im,x,d);document.body.append(w);
 }
 function locEl(l){
   const z=15,n=2**z,x=(l.lng+180)/360*n,la=l.lat*Math.PI/180,y=(1-Math.log(Math.tan(la)+1/Math.cos(la))/Math.PI)/2*n,tx=Math.floor(x),ty=Math.floor(y);
@@ -940,7 +1034,7 @@ let setPage='';
 function openSettings(){setPage='';showView(['settings'][0])}
 function showView(v){
   $('app').classList.toggle('full',v!=='chats');
-  ['tabs','topbar','list','sbar2','adb'].forEach(i=>$(i).classList.toggle('hide',v!=='chats'));
+  ['tabs','topbar','list','sbar2','adb','brand'].forEach(i=>$(i).classList.toggle('hide',v!=='chats'));
   $('fab').classList.toggle('hide',v!=='chats'&&v!=='stories');
   $('fabMenu').classList.add('hide');
   $('pview').classList.toggle('hide',v!=='profile');$('sview').classList.toggle('hide',v!=='settings');$('tview').classList.toggle('hide',v!=='stories');$('xview').classList.toggle('hide',v!=='posts');
@@ -1351,7 +1445,7 @@ function postCard(id,p){
   if(p.text)c.append(el('div','pt ut',p.text));
   if(p.hasImg){
     const ph=el('div','pimg');c.append(ph);
-    (pmc[id]?Promise.resolve(pmc[id]):get(ref(db,'postMedia/'+id)).then(s=>pmc[id]=s.val())).then(d=>{if(d&&p.vid){const v=document.createElement('video');v.src=d;v.controls=true;v.playsInline=true;v.preload='metadata';v.style.cssText='width:100%;max-height:420px;border-radius:14px;background:#000;display:block';ph.append(v)}else if(d){const im=new Image();im.src=d;im.onclick=()=>{const w=window.open();if(w)w.document.write('<img style="max-width:100%" src="'+d+'">')};ph.append(im)}else ph.remove()}).catch(()=>ph.remove());
+    (pmc[id]?Promise.resolve(pmc[id]):get(ref(db,'postMedia/'+id)).then(s=>pmc[id]=s.val())).then(d=>{if(d&&p.vid){const v=document.createElement('video');v.src=d;v.controls=true;v.playsInline=true;v.preload='metadata';v.style.cssText='width:100%;max-height:420px;border-radius:14px;background:#000;display:block';ph.append(v)}else if(d){const im=new Image();im.src=d;im.onclick=()=>lightbox(d);ph.append(im)}else ph.remove()}).catch(()=>ph.remove());
   }
   const bar=el('div','pbar'),lk=icoBtn(IC.heart,'lk'),lc=el('span',null,'0'),cm=icoBtn(IC.chat),cc=el('span',null,'0'),sh=icoBtn(IC.share);
   lk.append(lc);cm.append(cc);
@@ -1679,6 +1773,9 @@ function devicesPage(b){
 }
 const LANGS=[['fa','فارسی'],['en','English']];
 const MODEN={dark:'تاریک',light:'روشن',auto:'خودکار'};
+const IGI='<svg viewBox="0 0 24 24"><defs><linearGradient id="igg" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#fdc830"/><stop offset=".5" stop-color="#f0377a"/><stop offset="1" stop-color="#7b3fe4"/></linearGradient></defs><rect x="3" y="3" width="18" height="18" rx="5.5" fill="none" stroke="url(#igg)" stroke-width="2"/><circle cx="12" cy="12" r="4.2" fill="none" stroke="url(#igg)" stroke-width="2"/><circle cx="17.2" cy="6.8" r="1.2" fill="url(#igg)"/></svg>';
+const TGI='<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#2aabee"/><path d="M5.5 11.8l11.6-4.5c.5-.2 1 .1.8.9l-2 9.3c-.1.6-.5.8-1 .5l-3-2.2-1.4 1.4c-.2.2-.3.3-.6.3l.2-3 5.5-5c.2-.2 0-.3-.4-.1l-6.8 4.3-2.9-.9c-.6-.2-.6-.6.1-.9z" fill="#fff"/></svg>';
+const icoRow=(r,svg)=>{const i=el('span','ico');i.innerHTML=svg;r.prepend(i);return r};
 function sRow(title,val,onclick,danger){
   const r=el('button','row');r.style.cssText='width:100%;border-radius:14px;padding:13px 14px;text-align:start';
   const t=el('b',null,title);t.style.flex='1';if(danger)t.style.color='#ff7d9a';
@@ -1728,7 +1825,8 @@ function buildSettings(b){
       dv,
       sRow('زبان',(LANGS.find(l=>l[0]===LANG)||LANGS[0])[1],sGo('language')),
       sRow('پشتیبانی','',sGo('support')),
-      sRow('اینستاگرام','@macuancht',()=>window.open(INSTA,'_blank','noopener'))
+      icoRow(sRow('اینستاگرام','@macuancht',()=>window.open(INSTA,'_blank','noopener')),IGI),
+      icoRow(sRow('تلگرام','@MACuancht',()=>window.open(TGL,'_blank','noopener')),TGI)
     ));
     if(advonUid===uid)b.append(group(sRow('بنر تبلیغاتی','',bannerModal),sRow('گزارش‌های رسیده','',reportsModal)));
     const lo=sRow('خروج از حساب','',()=>{if(confirm('از حساب خود خارج می‌شوید؟'))forceLogout()},true);
@@ -1764,7 +1862,8 @@ function buildSettings(b){
     const sms=el('a','btn','پیامک');sms.href='sms:'+SUPPORT;
     const cp=el('button','btn g','کپی');cp.onclick=()=>copyT(SUPPORT);
     r2.append(call,sms,cp);c.append(el('div',null,'برای راهنمایی یا گزارش مشکل با ما در تماس باش'),el('b',null,SUPPORT),r2);b.append(c);
-    const ig=el('a','btn g','اینستاگرام ماکوان');ig.href=INSTA;ig.target='_blank';ig.rel='noopener';b.append(ig);
+    {const lr=el('div','row2'),mk=(t,href,svg)=>{const a=el('a','btn g');a.href=href;a.target='_blank';a.rel='noopener';a.style.cssText='display:flex;align-items:center;justify-content:center;gap:8px';const i=el('span','ico');i.style.margin='0';i.innerHTML=svg;a.append(i,document.createTextNode(t));return a};
+     lr.append(mk('اینستاگرام ماکوان',INSTA,IGI),mk('کانال تلگرام',TGL,TGI));b.append(lr)}
     const ch=el('button','btn g','کانال رسمی ماکوان');ch.onclick=async()=>{const id=(await get(ref(db,'handles/'+OFFICIAL))).val();if(id){const d=(await get(ref(db,'chats/'+id))).val();if(d){showView('chats');openChat(id,d)}}};b.append(ch);
     return;
   }
@@ -1966,7 +2065,7 @@ async function loadShared(o,box){
   const ms=Object.values(v).sort((a,c)=>c.ts-a.ts),im=ms.filter(m=>m.img),fl=ms.filter(m=>m.file||m.audio);
   if(im.length){
     box.append(el('div','sec','عکس‌ها ('+im.length.toLocaleString(LOC)+')'));const gr=el('div','shg');
-    im.slice(0,30).forEach(m=>{const t=new Image();t.src=m.img;t.onclick=()=>{const w=window.open();if(w)w.document.write('<img style="max-width:100%" src="'+m.img+'">')};gr.append(t)});box.append(gr);
+    im.slice(0,30).forEach(m=>{const t=new Image();t.src=m.img;t.onclick=()=>lightbox(m.img);gr.append(t)});box.append(gr);
   }
   if(fl.length){
     box.append(el('div','sec','فایل‌ها ('+fl.length.toLocaleString(LOC)+')'));
@@ -1976,7 +2075,8 @@ async function loadShared(o,box){
 function userModal(i,u){
   const id=cur,d=curData||{},g=d.type==='group'||d.type==='channel',adm=!!(d.admins&&d.admins[i]);
   modal((b,close)=>{
-    const top=el('div','hdr'),sp=el('div');sp.style.flex='1';const x=el('button','ib','✕');x.onclick=close;top.append(sp,x);
+    b.style.position='relative';
+    const top=el('div','hdr'),sp=el('div');top.style.direction='ltr';sp.style.flex='1';const x=el('button','ib','✕');x.onclick=close;top.append(x,sp);
     const ring=el('div','pring none'),av=el('div','av lg');ring.style.margin='0 auto';ring.append(av);
     setAv(av,u.photo,u.name);if(u.photo)allowed(u,i,'photo').then(ok=>{if(!ok)setAv(av,'',u.name)});
     const h3=el('h3',null,u.name||'');if(isVer(i))h3.append(vbadge());
@@ -1997,8 +2097,8 @@ function userModal(i,u){
       m1.onclick=()=>{close();openDM(i)};m2.onclick=()=>{close();startCall(i,'audio')};m3.onclick=()=>{close();startCall(i,'video')};
       r.append(m1,m2,m3);b.append(r);
     }
-    const grp=el('div','card');grp.style.cssText+=';padding:4px;gap:0;text-align:start';
-    const act=(t,f,dg)=>grp.append(sRow(t,'',async()=>{close();await f()},dg));
+    const mn=el('div','menu hide');mn.style.cssText='top:62px;right:16px;left:auto;inset-inline-start:auto;min-width:230px';
+    const act=(t,f,dg)=>{const xb=el('button',null,t);if(dg)xb.style.color='#ff7d9a';xb.onclick=async()=>{close();await f()};mn.append(xb)};
     if(i!==uid){
       act(contacts[i]?'حذف از مخاطبین':'افزودن به مخاطبین',()=>toggleContact(i));
       act(myBlocked[i]?'رفع مسدودی':'مسدود کردن',()=>toggleBlock(i));
@@ -2010,7 +2110,7 @@ function userModal(i,u){
     }
     if(g&&i!==uid&&i!==d.owner&&(isOwner(d)||(isAdm(d)&&!adm)))
       act('حذف از '+kind(d),()=>{if(confirm('این کاربر حذف شود؟'))return update(ref(db),{['chats/'+id+'/members/'+i]:null,['chats/'+id+'/admins/'+i]:null,['userChats/'+i+'/'+id]:null,['chats/'+id+'/removed/'+i]:true}).then(()=>toast('حذف شد'))},true);
-    if(grp.children.length)b.append(grp);
+    if(mn.children.length){const mb=el('button','ib','⋮');mb.onclick=e=>{e.stopPropagation();mn.classList.toggle('hide')};top.append(mb);b.append(mn)}
     if(i!==uid){const sh=el('div');b.append(sh);loadShared(i,sh)}
     closeBtn(b,close);
   });
@@ -2060,6 +2160,12 @@ function editChatModal(){
       }
       try{await update(ref(db),up);close();toast('ذخیره شد')}catch(e){toast('ذخیره نشد')}};
     b.append(ok,rp);
+    if(d.type==='group'){
+      b.append(el('div','sec','حالت آهسته'));
+      const sl=el('select');[[0,'خاموش'],[10,'10 ثانیه'],[30,'30 ثانیه'],[60,'1 دقیقه'],[300,'5 دقیقه']].forEach(([v,t])=>{const o=el('option',null,t);o.value=v;if((d.slow||0)===v)o.selected=true;sl.append(o)});
+      sl.onchange=async()=>{try{await update(ref(db,'chats/'+id),{slow:+sl.value||null});toast('ذخیره شد')}catch(e){toast('ذخیره نشد')}};
+      b.append(sl);
+    }
     if(d.type==='group'){const cb=el('button','btn g',d.closed?'باز کردن گروه':'بستن گروه');cb.onclick=()=>{close();toggleClosed()};b.append(cb)}
     if(d.type==='channel'&&isOwner(d)){const mb=el('button','btn g','درآمدزایی');mb.onclick=()=>{close();monetizeModal()};b.append(mb)}
     b.append(el('div','sec','کاربران حذف‌شده'));
@@ -2082,7 +2188,7 @@ const EN={
 "آیدی، نام کاربری یا شماره":"ID, username or number","ارسال نظر":"Send comment","انتشار پست":"Publish post","این پست حذف شود":"Delete this post","این کاربر هنوز پستی نگذاشته":"This user hasn't posted yet","بازگشت":"Back","جست‌وجوی کاربر":"Search users","حذف پست":"Delete post","دریافت پست‌ها ممکن نشد":"Could not load posts","متن پست":"Post text","متن یا عکس بنویس":"Add text or a photo","نظر خودت را بنویس":"Write your comment","نظرات":"Comments","هنوز نظری نیست":"No comments yet","هنوز پستی نیست؛ اولین پست را تو بگذار":"No posts yet; be the first to post","پست":"Post","پست جدید":"New post","پست در دسترس نیست":"Post unavailable","پست منتشر شد":"Post published","پست‌ها":"Posts","چیزی بنویس یا عکسی منتشر کن":"Write something or share a photo","کاربری پیدا نشد":"No user found","گزارش پست":"Report post","کپی لینک":"Copy link","چت":"chats","عکس":"Photo","نام":"Name","حذف":"Delete","شفق":"Aurora","صدا":"Sound","عضو":"members","رأی":"votes","آمار":"Stats","اعضا":"Members","بستن":"Close","بنفش":"Violet","ترک":"Leave","تماس":"Call","جدید":"New","حساب":"Account","درود":"Hello","دریا":"Sea","دعوت":"Invite","ربات":"Bot","روشن":"Light","زبان":"Language","زمرد":"Emerald","سؤال":"Question","ساخت":"Create","ساده":"Plain","ساعت":"time","سایت":"site","سایر":"Other","سلام":"Hello","غروب":"Sunset","فایل":"File","لینک":"link","مالک":"Owner","مدیر":"Admin","پاسخ":"Reply","پیام":"Message","گروه":"Group","ارسال":"Send","امروز":"Today","تاریخ":"Date","تاریک":"Dark","حرف A":"Letter A","خاموش":"Off","دستور":"command","دیروز":"Yesterday","ذخیره":"Save","نقش":"Role","پیامک":"SMS","پیوست":"Attach","کاربر":"User","کانال":"Channel","کهربا":"Amber","گل‌رز":"Rose","آنلاین":"Online","استوری":"Story","افزودن":"Add","انتشار":"Publish","خودکار":"Auto","دستگاه":"Device","دلیل":"Reason","راهنما":"Help","رنگ تم":"Theme color","مرورگر":"Browser","ماکوان":"MACuan","موسیقی":"Music","هیچ‌کس":"Nobody","همه":"Everyone","ویرایش":"Edit","پیوستن":"Join","گزارش":"Report","گزینه":"Option","بازدید":"views","اطلاعات":"Info","اقیانوس":"Ocean","تنظیمات":"Settings","جست‌وجو":"Search","نظرسنجی":"Poll","پروفایل":"Profile","پسندیدن":"Like","پشتیبان":"support","کاربران":"Users","گروه‌ها":"Groups","گفت‌وگو":"Chats","بازدیدها":"Views","بیوگرافی":"Bio","توضیحات":"Description","موبایل":"Mobile","پشتیبانی":"Support","کامپیوتر":"Computer","کانال‌ها":"Channels","مخاطبین":"Contacts","اختیاری":"optional","انگلیسی":"English","مثل":"like","متن":"Text","یا":"or","آیدی":"ID","فعال":"On","غیرفعال":"Off",
 "حذف شد":"Deleted","کپی":"Copy","کپی شد":"Copied","ثبت نشد":"Not saved","حذف عکس":"Remove photo","ارسال شد":"Sent","اضافه شد":"Added","جعل هویت":"Impersonation","حذف پوشه":"Delete folder","ذخیره شد":"Saved","ساخته شد":"Created","نام پوشه":"Folder name","پاسخ به":"Reply to","ارسال نشد":"Not sent","استوری من":"My story","استوری‌ها":"Stories","انجام نشد":"Failed","تأیید شده":"Verified","تم و ظاهر":"Theme & appearance","دستگاه‌ها":"Devices","ذخیره نشد":"Could not save","رسیدگی شد":"Mark as handled","صدای پیام":"Message sound","پوشه جدید":"New folder","پیام شخصی":"Direct messages","گروه جدید":"New group","گوشی/تبلت":"Phone/tablet","ارسال پیام":"Send message","انتشار نشد":"Could not publish","ثبت استوری":"Post story","حالت نمایش":"Display mode","در مخاطبین":"In contacts","دعوت مخاطب":"Invite contact","رفع مسدودی":"Unblock","سنجاق کردن":"Pin","لغو مدیریت":"Remove admin","مخاطب جدید":"New contact","مخاطبین من":"My contacts","مخصوص خودت":"Just for you","مدت‌ها پیش":"Long ago","مسدود کردن":"Block","نقض حق نشر":"Copyright violation","کانال جدید":"New channel","گزارش پیام":"Report message","گزارش‌ها":"Reports","ارسال به":"Send to","ارسال گزارش":"Send report","استوری جدید":"New story","ربات ماکوان":"MACuan bot","طرح خاکستری":"Gray pattern","عکس پروفایل":"Profile photo","فوروارد از":"Forwarded from","ویرایش پوشه":"Edit folder","ویرایش پیام":"Edit message","پس‌زمینه چت":"Chat background","گزارش کاربر":"Report user","گزارشی نیست":"No reports","اشتراک‌گذاری":"Share","انتخاب شده":"Selected","برداشتن پسند":"Unlike","خروج از حساب":"Log out","رسیدگی شده":"Handled","شماره موبایل":"Mobile number","نظرسنجی جدید":"New poll","ورود با گوگل":"Sign in with Google","این دستگاه":"this device","ویرایش‌شده":"edited","ارتقا به مدیر":"Promote to admin","این خودت هستی":"This is you","برداشتن سنجاق":"Unpin","دعوت با پیامک":"Invite via SMS","رفع مسدودی شد":"Unblocked","عضوی پیدا نشد":"No members found","محتوای مستهجن":"Adult content","مدیریت لغو شد":"Admin role removed","مشاهده استوری":"View story","پروفایل کاربر":"User profile","کاربران مسدود":"Blocked users","کانال رسمی":"Official channel","کپی لینک دعوت":"Copy invite link","گزارش‌دهنده":"Reporter","آخرین بازدید":"Last seen","آخرین فعالیت":"Last active","افزودن به پوشه":"Add to folder","حذف از مخاطبین":"Remove from contacts","در حال تایپ":"Typing","نام را وارد کن":"Enter a name","ویرایش اطلاعات":"Edit info","پایان این نشست":"End this session","پوشه‌های گفتگو":"Chat folders","پیام سنجاق‌شده":"Pinned message","کاربر مسدود شد":"User blocked","کاربران ماکوان":"MACuan users","استوری منتشر شد":"Story published","بازدیدکنندگان":"Viewers","جست‌وجو در اعضا":"Search members","دستگاه‌های فعال":"Active devices","نشست پایان یافت":"Session ended","هنوز چتی ندارید":"You don't have any chats yet","گزارش‌های رسیده":"Received reports","ارسال به چت دیگر":"Send to another chat","حذف عکس پس‌زمینه":"Remove background photo","شماره پشتیبانی":"Support number","مخاطبین و استوری":"Contacts & stories","موردی انتخاب نشد":"Nothing selected","ورود انجام نشد":"Sign-in failed","چت‌های داخل پوشه":"Chats in folder","از مخاطبین حذف شد":"Removed from contacts","استوری جدیدی نیست":"No new stories","اشتراک‌گذاری لینک":"Share link","افزودن به مخاطبین":"Add to contacts","این پوشه حذف شود":"Delete this folder","این پیام حذف شود":"Delete this message","تعداد چت‌های تو":"Your chats","محتوای خشونت‌آمیز":"Violent content","نتیجه‌ای پیدا نشد":"No results found","کانال رسمی ماکوان":"Official MACuan channel","اندازه متن پیام‌ها":"Message text size","این آیدی گرفته شده":"This ID is taken","این کاربر حذف شود":"Remove this user","برای تغییر عکس بزن":"Tap to change photo","به مدیر ارتقا یافت":"Promoted to admin","جست‌وجو در مخاطبین":"Search contacts","جست‌وجو در پیام‌ها":"Search messages","حریم خصوصی و امنیت":"Privacy & security","در حال بارگذاری":"Loading","هنوز کسی ندیده است":"No one has seen it yet","پیام در دسترس نیست":"Message unavailable","پیام‌های ذخیره‌شده":"Saved messages","کانال‌ها و گروه‌ها":"Channels & groups","گروه‌ها و کانال‌ها":"Groups & channels","ارسال دعوت با پیامک":"Send invite via SMS","انتخاب عکس از گالری":"Choose photo from gallery","این استوری حذف شود":"Delete this story","برای انتخاب عکس بزن":"Tap to choose a photo","به مخاطبین اضافه شد":"Added to contacts","دستگاه‌های وارد شده":"Signed-in devices","محتوا در دسترس نیست":"Content unavailable","مخاطبین و حساب رسمی":"Contacts & official account","نام پوشه را وارد کن":"Enter a folder name","آیدی عمومی":"Public ID","پروفایل خودت را بساز":"Create your profile","کلاهبرداری یا فیشینگ":"Scam or phishing","برای همیشه حذف شود":"— delete permanently",
 "آخرین بازدید به‌تازگی":"Last seen recently","آخرین بازدید و آنلاین":"Last seen & online","آیدی حداقل ۳ حرف باشد":"ID must be at least 3 characters","اسپم یا تبلیغات مزاحم":"Spam or unwanted ads","توضیح بیشتر":"More details","کسی را مسدود نکرده‌ای":"You haven't blocked anyone","گزارش ارسال شد؛ ممنون":"Report sent; thank you","هنوز پوشه‌ای نساخته‌ای":"You haven't created any folders yet","پاسخ‌گوی خودکار ماکوان":"MACuan auto-responder","این شماره قبلاً ثبت شده":"This number is already registered","دلیل گزارش را انتخاب کن":"Select a reason for the report","عکس، ویدیو یا متن بنویس":"Add a photo, video or text","مالک نمی‌تواند خارج شود":"The owner cannot leave","پایان همه نشست‌های دیگر":"End all other sessions","یک گفت‌وگو را انتخاب کن":"Select a chat","این نام کاربری گرفته شده":"This username is taken","آیدی رسمی قابل تغییر نیست":"The official ID cannot be changed","از حساب خود خارج می‌شوید":"Log out of your account","این کاربر را مسدود کرده‌اید":"You have blocked this user","حجم عکس برای ذخیره زیاد است":"Photo is too large to save","ذخیره در پیام‌های ذخیره‌شده":"Save to saved messages","دسترسی به گزارش‌ها ممکن نیست":"Cannot access reports","دوستانت را به ماکوان دعوت کن":"Invite your friends to MACuan","همه نشست‌های دیگر پایان یافت":"All other sessions ended","سؤال و حداقل ۲ گزینه لازم است":"A question and at least 2 options are required","کاربری با این مشخصات پیدا نشد":"No user found with these details","چه کسی می‌تواند به من پیام دهد":"Who can message me","حداکثر حجم موسیقی ۳ مگابایت است":"Music files can be at most 3 MB","نام کاربری":"Username","حجم ویدیو بیشتر از ۴ مگابایت است":"Video is larger than 4 MB","حداکثر حجم فایل ۷۰۰ کیلوبایت است":"Files can be at most 700 KB","شما توسط این کاربر مسدود شده‌اید":"You have been blocked by this user","پیدا کردن دوستان از مخاطبین گوشی":"Find friends from phone contacts","عکس‌های پروفایل (برای انتخاب بزن":"Profile photos (tap to select","جست‌وجوی شماره، @آیدی، گروه یا کانال":"Search number, @ID, group or channel","گروه و کانال رسمی ماکوان قابل حذف نیست":"The official MACuan group and channel cannot be deleted","اتصال برقرار نشد؛ صفحه را دوباره باز کن":"Could not connect; reopen the page","این کاربر فقط از مخاطبینش پیام می‌پذیرد":"This user only accepts messages from contacts","فقط مدیران می‌توانند در کانال پیام بدهند":"Only admins can post in this channel","شماره موبایل معتبر نیست (مثل 09123456789":"Invalid mobile number (like 09123456789","نام کاربری حداقل ۳ حرف (a-z، عدد و _) باشد":"Username must be at least 3 characters (a-z, digits and _)","گروه رسمی ماکوان؛ اینجا با هم گفت‌وگو کنید":"Official MACuan group; chat together here","ویدیو قابل پخش نیست یا بیشتر از ۳۰ ثانیه است":"Video cannot be played or is longer than 30 seconds","با تغییر زبان، برنامه دوباره بارگذاری می‌شود":"The app reloads when you change the language","برای راهنمایی یا گزارش مشکل با ما در تماس باش":"Contact us for help or to report a problem","این مرورگر دسترسی به مخاطبین گوشی را پشتیبانی نمی‌کند":"This browser does not support access to phone contacts","مخاطبین من یعنی فقط کسانی که در فهرست مخاطبین تو هستند":"\"My contacts\" means only people in your contacts list","مخاطبی نیست":"No contacts","از «مخاطب جدید» یا «دعوت مخاطب» استفاده کن":"Use \"New contact\" or \"Invite contact\"","پیام‌رسان سریع و زیبا؛ با حساب گوگل وارد شو و گفت‌وگو را شروع کن":"A fast, beautiful messenger; sign in with your Google account and start chatting","عکس یا ویدیو (حداکثر ۳۰ ثانیه و ۴ مگابایت)؛ ۲۴ ساعت بعد حذف می‌شود":"Photo or video (max 30 seconds and 4 MB); deleted after 24 hours","چتی در این بخش نیست":"No chats in this section","با جست‌وجوی آیدی کسی را پیدا کن یا گروه بساز":"Find someone by searching their ID, or create a group","کاربر مسدودشده نمی‌تواند به تو پیام بدهد. تنظیمات حریم خصوصی در برنامه اعمال می‌شود":"A blocked user cannot message you. Privacy settings are enforced in the app","چت‌ها را در پوشه‌ها دسته‌بندی کن؛ پوشه‌ها کنار تب‌های بالای فهرست گفتگو نشان داده می‌شوند. (روی همین دستگاه ذخیره می‌شود":"Organize chats into folders; folders appear next to the tabs above the chat list. (Saved on this device",
-"ترک گروه":"Leave group","ترک کانال":"Leave channel","حذف گروه":"Delete group","حذف کانال":"Delete channel","ویرایش گروه":"Edit group","ویرایش کانال":"Edit channel","ثبت استوری گروه":"Post group story","ثبت استوری کانال":"Post channel story","پیوستن به گروه":"Join group","پیوستن به کانال":"Join channel","حذف از گروه":"Remove from group","حذف از کانال":"Remove from channel","نقش: عضو":"Role: member","نقش: مالک":"Role: owner","نقش: مدیر":"Role: admin","استوری گروه":"Group story","استوری کانال":"Channel story","ثبت استوری":"Post story","پیامی ارسال نشد":"Message not sent","مدیریت گروه":"Manage group","ماکوان چت را در اینستاگرام دنبال کن":"Follow MACuan Chat on Instagram","تبلیغات":"Ad","بنر تبلیغاتی":"Advertising banner","عنوان":"Title","متن کوتاه":"Short text","ذخیره بنر":"Save banner","حذف بنر":"Remove banner","استوری در دسترس نیست":"Story unavailable","ماکو":"Maku","کانال رسمی ماکوان قابل حذف نیست":"The official MACuan channel cannot be deleted","متن استوری را بنویس":"Write your story text","متن استوری اینجا نمایش داده می‌شود":"Your story text appears here","عکس یا ویدیو":"Photo or video","حذف رسانه":"Remove media","ویدیو":"Video","دانلود شد":"Downloaded","دانلود نشد":"Download failed","دانلود":"Download","مشاهده پروفایل کامل":"View full profile","ارسال پیام به":"Send message to","پیام خصوصی به":"Private message to","چه خبر؟ چیزی بنویس":"What's new? Write something","دکمه‌ها و پوشه‌ها":"Buttons & folders","دکمه‌های بالای فهرست":"Buttons above the list","پنهان":"Hidden","نمایش":"Shown","پوشه‌ها":"Folders","کپی نام کاربری":"Copy username","اینستاگرام":"Instagram","اینستاگرام ماکوان":"MACuan Instagram","سبز":"Green","بی‌صدا":"Muted","سنجاق‌شده":"Pinned","مشکی":"Black","مکان":"Location","مکان فعلی":"Current location","مرورگر از مکان‌یابی پشتیبانی نمی‌کند":"Your browser does not support location","در حال یافتن مکان":"Finding your location","دسترسی به مکان داده نشد":"Location access denied","در حال برقراری تماس":"Connecting","میکروفون":"Microphone","پایان تماس":"End call","دوربین":"Camera","اتصال تماس برقرار نشد":"Could not connect the call","مرورگر از تماس پشتیبانی نمی‌کند":"Your browser does not support calls","دسترسی به میکروفون یا دوربین داده نشد":"Microphone or camera access denied","در حال تماس هستید":"You are already in a call","شروع تماس ممکن نشد":"Could not start the call","در حال زنگ خوردن":"Ringing","تماس رد شد":"Call declined","تماس پایان یافت":"Call ended","در حال اتصال":"Connecting","پاسخی داده نشد":"No answer","تماس تصویری ورودی":"Incoming video call","تماس صوتی ورودی":"Incoming voice call","رد":"Decline","درآمدزایی":"Monetization","عکس‌ها":"Photos","فایل‌ها":"Files","تماس صوتی":"Voice call","تماس تصویری":"Video call","درآمدزایی کانال":"Channel monetization","دنبال‌کننده":"Followers","کانال شما شرایط درآمدزایی را دارد":"Your channel is eligible for monetization","برای فعال‌سازی درآمدزایی حداقل ۱۰۰۰ دنبال‌کننده لازم است":"At least 1,000 followers are required to enable monetization","میانگین بازدید هر پست":"Average views per post","درآمد تخمینی":"Estimated earnings","درآمد بر پایهٔ نرخ آزمایشی ۰٫۵ دلار برای هر ۱۰۰۰ بازدید برآورد می‌شود؛ پرداخت واقعی نیاز به درگاه جداگانه دارد":"Earnings are estimated at a trial rate of $0.5 per 1,000 views; real payouts require a separate payment gateway","غیرفعال‌سازی درآمدزایی":"Disable monetization","فعال‌سازی درآمدزایی":"Enable monetization","درآمدزایی غیرفعال شد":"Monetization disabled","درآمدزایی فعال شد":"Monetization enabled","قفل: ۱۰۰۰ دنبال‌کننده لازم است":"Locked: 1,000 followers required","بازدید پست‌ها":"Post views","مدیریت کانال":"Manage channel","کاربران حذف‌شده":"Removed users","کاربر حذف‌شده‌ای نیست":"No removed users","بازگرداندن":"Restore","بازگردانده شد":"Restored","افزودن عضو":"Add member","عضو است":"Is a member","عضو اضافه شد":"Member added","شما از این گروه حذف شده‌اید":"You were removed from this group","شما از این کانال حذف شده‌اید":"You were removed from this channel","این کاربر حذف شده است":"This user was removed","جست‌وجو در مخاطبین، شماره یا @آیدی":"Search contacts, number or @ID","بستن گروه":"Close group","باز کردن گروه":"Open group","بسته":"closed","گروه بسته شد":"Group closed","گروه باز شد":"Group opened","گروه بسته است":"Group is closed","گروه بسته است؛ فقط مدیران می‌توانند پیام بدهند":"Group is closed; only admins can post","گروه بسته شد؛ فقط مدیران می‌توانند پیام بدهند":"Group closed; only admins can post","گروه باز شد؛ همه اعضا می‌توانند پیام بدهند":"Group opened; all members can post","بی‌صدا کردن":"Mute","فعال کردن صدا":"Unmute","بی‌صدا شد":"Muted","صدا فعال شد":"Unmuted","سنجاق چت":"Pin chat","برداشتن سنجاق چت":"Unpin chat","چت سنجاق شد":"Chat pinned","سنجاق برداشته شد":"Unpinned","پاک کردن تاریخچه":"Clear history","پاک شد":"Cleared","پیش‌نویس":"Draft","پیام‌های این چت فقط برای تو پاک شود":"Clear this chat's messages for you only"
+"ترک گروه":"Leave group","ترک کانال":"Leave channel","حذف گروه":"Delete group","حذف کانال":"Delete channel","ویرایش گروه":"Edit group","ویرایش کانال":"Edit channel","ثبت استوری گروه":"Post group story","ثبت استوری کانال":"Post channel story","پیوستن به گروه":"Join group","پیوستن به کانال":"Join channel","حذف از گروه":"Remove from group","حذف از کانال":"Remove from channel","نقش: عضو":"Role: member","نقش: مالک":"Role: owner","نقش: مدیر":"Role: admin","استوری گروه":"Group story","استوری کانال":"Channel story","ثبت استوری":"Post story","پیامی ارسال نشد":"Message not sent","مدیریت گروه":"Manage group","ماکوان چت":"MACuan Cht","یا با ایمیل وارد شو":"Or sign in with email","ایمیل":"Email","رمز عبور":"Password","ورود":"Sign in","ثبت‌نام":"Sign up","فراموشی رمز عبور":"Forgot password","ایمیل یا رمز عبور اشتباه است":"Wrong email or password","ایمیل معتبر نیست":"Invalid email","این ایمیل قبلاً ثبت شده است":"This email is already registered","رمز عبور حداقل ۶ کاراکتر باشد":"Password must be at least 6 characters","رمز عبور را وارد کن":"Enter your password","ورود با ایمیل در Firebase فعال نیست":"Email sign-in is not enabled in Firebase","تلاش بیش از حد؛ کمی بعد دوباره امتحان کن":"Too many attempts; try again later","اتصال برقرار نشد":"Could not connect","ورود انجام نشد":"Sign-in failed","ایمیل و رمز عبور را وارد کن":"Enter your email and password","ابتدا ایمیل را وارد کن":"Enter your email first","لینک بازیابی به ایمیل ارسال شد":"Recovery link sent to your email","حذف گفت‌وگو":"Delete chat","این گفت‌وگو از لیست تو حذف شود":"Remove this chat from your list","تلگرام":"Telegram","کانال تلگرام":"Telegram channel","ضبط پیام صوتی":"Record voice message","مرورگر از ضبط صدا پشتیبانی نمی‌کند":"Your browser does not support audio recording","دسترسی به میکروفون داده نشد":"Microphone access denied","در حال ضبط":"Recording","لغو":"Cancel","پیام صوتی خیلی طولانی است":"Voice message is too long","حالت آهسته":"Slow mode","ثانیه صبر کن":"seconds to wait","خاموش":"Off","ثانیه":"seconds","دقیقه":"min","ماکوان چت را در اینستاگرام دنبال کن":"Follow MACuan Chat on Instagram","تبلیغات":"Ad","بنر تبلیغاتی":"Advertising banner","عنوان":"Title","متن کوتاه":"Short text","ذخیره بنر":"Save banner","حذف بنر":"Remove banner","استوری در دسترس نیست":"Story unavailable","ماکو":"Maku","کانال رسمی ماکوان قابل حذف نیست":"The official MACuan channel cannot be deleted","متن استوری را بنویس":"Write your story text","متن استوری اینجا نمایش داده می‌شود":"Your story text appears here","عکس یا ویدیو":"Photo or video","حذف رسانه":"Remove media","ویدیو":"Video","دانلود شد":"Downloaded","دانلود نشد":"Download failed","دانلود":"Download","مشاهده پروفایل کامل":"View full profile","ارسال پیام به":"Send message to","پیام خصوصی به":"Private message to","چه خبر؟ چیزی بنویس":"What's new? Write something","دکمه‌ها و پوشه‌ها":"Buttons & folders","دکمه‌های بالای فهرست":"Buttons above the list","پنهان":"Hidden","نمایش":"Shown","پوشه‌ها":"Folders","کپی نام کاربری":"Copy username","اینستاگرام":"Instagram","اینستاگرام ماکوان":"MACuan Instagram","سبز":"Green","بی‌صدا":"Muted","سنجاق‌شده":"Pinned","مشکی":"Black","مکان":"Location","مکان فعلی":"Current location","مرورگر از مکان‌یابی پشتیبانی نمی‌کند":"Your browser does not support location","در حال یافتن مکان":"Finding your location","دسترسی به مکان داده نشد":"Location access denied","در حال برقراری تماس":"Connecting","میکروفون":"Microphone","پایان تماس":"End call","دوربین":"Camera","اتصال تماس برقرار نشد":"Could not connect the call","مرورگر از تماس پشتیبانی نمی‌کند":"Your browser does not support calls","دسترسی به میکروفون یا دوربین داده نشد":"Microphone or camera access denied","در حال تماس هستید":"You are already in a call","شروع تماس ممکن نشد":"Could not start the call","در حال زنگ خوردن":"Ringing","تماس رد شد":"Call declined","تماس پایان یافت":"Call ended","در حال اتصال":"Connecting","پاسخی داده نشد":"No answer","تماس تصویری ورودی":"Incoming video call","تماس صوتی ورودی":"Incoming voice call","رد":"Decline","درآمدزایی":"Monetization","عکس‌ها":"Photos","فایل‌ها":"Files","تماس صوتی":"Voice call","تماس تصویری":"Video call","درآمدزایی کانال":"Channel monetization","دنبال‌کننده":"Followers","کانال شما شرایط درآمدزایی را دارد":"Your channel is eligible for monetization","برای فعال‌سازی درآمدزایی حداقل ۱۰۰۰ دنبال‌کننده لازم است":"At least 1,000 followers are required to enable monetization","میانگین بازدید هر پست":"Average views per post","درآمد تخمینی":"Estimated earnings","درآمد بر پایهٔ نرخ آزمایشی ۰٫۵ دلار برای هر ۱۰۰۰ بازدید برآورد می‌شود؛ پرداخت واقعی نیاز به درگاه جداگانه دارد":"Earnings are estimated at a trial rate of $0.5 per 1,000 views; real payouts require a separate payment gateway","غیرفعال‌سازی درآمدزایی":"Disable monetization","فعال‌سازی درآمدزایی":"Enable monetization","درآمدزایی غیرفعال شد":"Monetization disabled","درآمدزایی فعال شد":"Monetization enabled","قفل: ۱۰۰۰ دنبال‌کننده لازم است":"Locked: 1,000 followers required","بازدید پست‌ها":"Post views","مدیریت کانال":"Manage channel","کاربران حذف‌شده":"Removed users","کاربر حذف‌شده‌ای نیست":"No removed users","بازگرداندن":"Restore","بازگردانده شد":"Restored","افزودن عضو":"Add member","عضو است":"Is a member","عضو اضافه شد":"Member added","شما از این گروه حذف شده‌اید":"You were removed from this group","شما از این کانال حذف شده‌اید":"You were removed from this channel","این کاربر حذف شده است":"This user was removed","جست‌وجو در مخاطبین، شماره یا @آیدی":"Search contacts, number or @ID","بستن گروه":"Close group","باز کردن گروه":"Open group","بسته":"closed","گروه بسته شد":"Group closed","گروه باز شد":"Group opened","گروه بسته است":"Group is closed","گروه بسته است؛ فقط مدیران می‌توانند پیام بدهند":"Group is closed; only admins can post","گروه بسته شد؛ فقط مدیران می‌توانند پیام بدهند":"Group closed; only admins can post","گروه باز شد؛ همه اعضا می‌توانند پیام بدهند":"Group opened; all members can post","بی‌صدا کردن":"Mute","فعال کردن صدا":"Unmute","بی‌صدا شد":"Muted","صدا فعال شد":"Unmuted","سنجاق چت":"Pin chat","برداشتن سنجاق چت":"Unpin chat","چت سنجاق شد":"Chat pinned","سنجاق برداشته شد":"Unpinned","پاک کردن تاریخچه":"Clear history","پاک شد":"Cleared","پیش‌نویس":"Draft","پیام‌های این چت فقط برای تو پاک شود":"Clear this chat's messages for you only"
 };
 const PUNL=/^[()«»:.,،؛؟?!…•—＋@"'\[\]-]+/,PUNT=/[()«»:.,،؛؟?!…•—"'\[\]-]+$/;
 function trText(s){
